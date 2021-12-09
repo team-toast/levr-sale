@@ -819,11 +819,11 @@ contract Sale is DSMath
     uint constant ONE_PERC = 10 ** 16;
     uint constant ONE_HUNDRED_PERC = 10 ** 18;
 
-    uint raised;
-    uint tokensIssued;
-    uint inclineRAY;
+    uint public raised;                             // Elmer Addition (Added public for debugging)
+    uint public tokensIssued;                       // Elmer Addition (Added public for debugging)
+    uint public inclineRAY;                         // Elmer Addition (Added public for debugging)
 
-    ERC20Mintable tokenOnSale;
+    ERC20Mintable public tokenOnSale;
 
     address gulper;
     address treasury;
@@ -883,13 +883,16 @@ contract Sale is DSMath
         (bool success,) = gulper.call.value(msg.value)("");
         require(success, "gulper malfunction");
 
+        tokensIssued = tokensIssued + tokensAssigned;   // Elmer Addition (Update tokensIssued)
+        raised = raised + msg.value;                    // Elmer Addition (Update eth amount raised)
+
         emit Bought(_retriever, tokensAssigned);
     }
 
     function assignTokens(address _retriever, uint _amount)
         private
     {
-        register[_retriever].releaseTime = block.timestamp.add(5 days);
+        register[_retriever].releaseTime = block.timestamp.add(1 minutes);      // Elmer Addition (1 minute instead of 5 days for testing)
         register[_retriever].amount = register[_retriever].amount.add(_amount);
     }
 
