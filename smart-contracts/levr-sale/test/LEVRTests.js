@@ -16,30 +16,17 @@ contract("LEVR", (accounts) => {
     const saleContract = await sale.new(
       incline,
       levrContract.address,
-      accounts[1],
-      accounts[4],
-      accounts[2],
-      accounts[3]
+      accounts[1], // gulper
+      accounts[4], // treasury
+      accounts[2], // liquidity
+      accounts[3] // foundryTreasury
     );
 
     let tokensIssued = 0;
     let totalRaised = 0;
     let amountRaised = 0;
 
-    await saleContract.buy(accounts[0], {
-      value: web3.utils.toWei(etherToSpend),
-    });
-
-    tokensIssued = await saleContract.tokensIssued();
-    console.log("Tokens Issued: ", web3.utils.fromWei(tokensIssued.toString()));
-
-    issueRecords.push([
-      0,
-      web3.utils.fromWei("0"),
-      web3.utils.fromWei(tokensIssued),
-    ]);
-
-    for (let i = 1; i < numberOfBuys; i++) {
+    for (let i = 0; i < numberOfBuys; i++) {
       amountRaised = await saleContract.raised();
       console.log("Amount raised: ", amountRaised.toString());
 
@@ -68,10 +55,8 @@ contract("LEVR", (accounts) => {
       path: "levrData.csv",
     });
 
-    csvWriter
-      .writeRecords(issueRecords) // returns a promise
-      .then(() => {
-        console.log("Written to csv");
-      });
+    csvWriter.writeRecords(issueRecords).then(() => {
+      console.log("Written to csv");
+    });
   });
 });
