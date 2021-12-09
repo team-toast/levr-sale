@@ -38,7 +38,7 @@ This is a contract that is meant to pull excess $LEVR out of circulation in orde
 This is a faucet that emits a predicible maximum amount $LEVR to the governance and staking contracts.
 Note the funds sent to the governance can be optionally burnt.
 
-Setup & test:
+## Setup & test the Sale:
 
 1. npm install
 2. npm run start (Compiles contracts and deploys them to local blockchain)
