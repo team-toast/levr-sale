@@ -18,6 +18,7 @@ contract Sale is DSMath
     uint public raised;                             // Elmer Addition (Added public for debugging)
     uint public tokensIssued;                       // Elmer Addition (Added public for debugging)
     uint public inclineRAY;                         // Elmer Addition (Added public for debugging)
+    uint public startingPoint;                      // Elmer Addition (Variable to offset the starting price to skip initial steep part of curve)
 
     ERC20Mintable public tokenOnSale;
 
@@ -36,6 +37,7 @@ contract Sale is DSMath
 
     constructor(
             uint _inclineRAY,
+            uint _startingPoint,
             ERC20Mintable _tokenOnSale, 
             address _gulper, 
             address _treasury, 
@@ -44,6 +46,7 @@ contract Sale is DSMath
         public
     {
         inclineRAY = _inclineRAY;
+        startingPoint = _startingPoint;
         tokenOnSale = _tokenOnSale;
         gulper = _gulper;
         treasury = _treasury;
@@ -109,21 +112,21 @@ contract Sale is DSMath
         emit Claimed(_receiver, amount);
     }
 
-    function pureCalculateSupply(uint _inclineRAY, uint _raised)
+    function pureCalculateSupply(uint _inclineRAY, uint _raised, uint _startingPoint)
         public
         pure
         returns(uint _tokens)
     {
-        // (2*incline*raised)^0.5 
-        _tokens = sqrt(uint(2).mul(_inclineRAY).mul(_raised).div(RAY));
+        // (2*incline*raised+startingPoint)^0.5 
+        _tokens = sqrt(uint(10).mul(_inclineRAY).mul(_raised.add(_startingPoint)).div(RAY)); // Elmer Addition (Added startingPoint offset to calculation)
     }
 
-    function pureCalculateTokensRecieved(uint _inclineRAY, uint _alreadyRaised, uint _supplied)
+    function pureCalculateTokensRecieved(uint _inclineRAY, uint _alreadyRaised, uint _supplied, uint _startingPoint) 
         public
         pure
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied)).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised));
+        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied), _startingPoint).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised, _startingPoint) + 1000000000000000000); // Elmer Addition (Added startingPoint to calculation)
     }
 
     function calculateTokensReceived(uint _supplied)
@@ -131,15 +134,15 @@ contract Sale is DSMath
         view
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateTokensRecieved(inclineRAY, raised, _supplied);
+        _tokensReturned = pureCalculateTokensRecieved(inclineRAY, raised, _supplied, startingPoint);        // Elmer Addition (Added startingPoint to calculation)
     }
 
-    function pureCalculatePricePerToken(uint _inclineRAY, uint _alreadyRaised, uint _supplied)
+    function viewCalculatePricePerToken(uint _inclineRAY, uint _alreadyRaised, uint _supplied)              
         public
-        pure
+        view                                                                        // Elmer Addition (Changed from pure to view)
         returns(uint _price)
     {
-        _price = pureCalculateTokensRecieved(_inclineRAY, _alreadyRaised, _supplied).mul(WAD).div(_supplied);
+        _price = pureCalculateTokensRecieved(_inclineRAY, _alreadyRaised, _supplied, startingPoint).mul(WAD).div(_supplied);
     }
 
     function calculatePricePerToken(uint _supplied)
@@ -147,7 +150,7 @@ contract Sale is DSMath
         view
         returns(uint _price)
     {
-        _price = pureCalculatePricePerToken(inclineRAY, raised, _supplied);
+        _price = viewCalculatePricePerToken(inclineRAY, raised, _supplied);
     }
 
     // babylonian method

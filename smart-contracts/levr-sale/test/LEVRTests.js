@@ -10,11 +10,13 @@ contract("LEVR", (accounts) => {
 
     let etherToSpend = "0.02";
     let incline = "10000000000000000000000000000000000000000000000000000000"; //10000000000 *10^18 *10^27
+    let startingPoint = "200000000000000000"; //0.2*10^18 wei
     let issueRecords = [];
     let numberOfBuys = 100;
 
     const saleContract = await sale.new(
       incline,
+      startingPoint,
       levrContract.address,
       accounts[1], // gulper
       accounts[4], // treasury
