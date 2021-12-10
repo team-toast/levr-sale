@@ -14,30 +14,21 @@ contract Sale is DSMath
 
     uint constant ONE_PERC = 10 ** 16;
     uint constant ONE_HUNDRED_PERC = 10 ** 18;
+    uint constant STARTING_POINT = 10 ** 18;
 
-    uint public raised;                             // Elmer Addition (Added public for debugging)
-    uint public tokensIssued;                       // Elmer Addition (Added public for debugging)
-    uint public inclineRAY;                         // Elmer Addition (Added public for debugging)
-    uint public startingPoint;                      // Elmer Addition (Variable to offset the starting price to skip initial steep part of curve)
+    uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
+    uint public tokensIssued;                       
+    uint public inclineRAY;                         
 
     ERC20Mintable public tokenOnSale;
 
-    address gulper;
-    address treasury;
-    address liquidity;
-    address foundryTreasury;
-
-    struct TokenRegister
-    {
-        uint releaseTime;
-        uint amount;
-    }
-
-    mapping(address => TokenRegister) public register;
+    address public gulper;
+    address public treasury;
+    address public liquidity;
+    address public foundryTreasury;
 
     constructor(
             uint _inclineRAY,
-            uint _startingPoint,
             ERC20Mintable _tokenOnSale, 
             address _gulper, 
             address _treasury, 
@@ -46,7 +37,6 @@ contract Sale is DSMath
         public
     {
         inclineRAY = _inclineRAY;
-        startingPoint = _startingPoint;
         tokenOnSale = _tokenOnSale;
         gulper = _gulper;
         treasury = _treasury;
@@ -55,12 +45,6 @@ contract Sale is DSMath
     }
 
     event Bought
-    (
-        address _retriever,
-        uint _amount
-    );
-
-    event Claimed
     (
         address _receiver,
         uint _amount
@@ -72,61 +56,47 @@ contract Sale is DSMath
         buy(msg.sender);
     }
 
-    function buy(address _retriever)
+    function buy(address _receiver)
         public
         payable
     {
         uint tokensAssigned = calculateTokensReceived(msg.value);
 
-        assignTokens(_retriever, tokensAssigned);
+        
         (bool success,) = gulper.call.value(msg.value)("");
         require(success, "gulper malfunction");
 
         tokensIssued = tokensIssued.add(tokensAssigned);   // Elmer Addition (Update tokensIssued)
         raised = raised.add(msg.value);                    // Elmer Addition (Update eth amount raised)
 
-        emit Bought(_retriever, tokensAssigned);
+        mintTokens(_receiver, tokensAssigned);
+        emit Bought(_receiver, tokensAssigned);
     }
 
-    function assignTokens(address _retriever, uint _amount)
-        private
-    {
-        register[_retriever].releaseTime = block.timestamp.add(1 minutes);      // Elmer Addition (1 minute instead of 5 days for testing)
-        register[_retriever].amount = register[_retriever].amount.add(_amount);
-    }
-
-    function claimTokens(address _receiver)
+    function mintTokens(address _receiver, uint _amount)
         public 
     {
-        require(register[msg.sender].releaseTime <= block.timestamp, "cooldown pending");
-        uint amount = register[msg.sender].amount;
-
-        tokenOnSale.mint(_receiver, amount.div(7).mul(4));  // 4/7
-        tokenOnSale.mint(treasury, amount.div(7));          // 1/7
-        tokenOnSale.mint(liquidity, amount.div(7));         // 1/7
-        tokenOnSale.mint(foundryTreasury, amount.div(7));   // 1/7
-
-        register[msg.sender].releaseTime = 0;
-        register[msg.sender].amount = 0;
-
-        emit Claimed(_receiver, amount);
+        tokenOnSale.mint(_receiver, _amount.div(7).mul(4));  // 4/7
+        tokenOnSale.mint(treasury, _amount.div(7));          // 1/7
+        tokenOnSale.mint(liquidity, _amount.div(7));         // 1/7
+        tokenOnSale.mint(foundryTreasury, _amount.div(7));   // 1/7
     }
 
-    function pureCalculateSupply(uint _inclineRAY, uint _raised, uint _startingPoint)
+    function pureCalculateSupply(uint _inclineRAY, uint _raised)
         public
         pure
         returns(uint _tokens)
     {
-        // (2*incline*raised+startingPoint)^0.5 
-        _tokens = sqrt(uint(10).mul(_inclineRAY).mul(_raised.add(_startingPoint)).div(RAY)); // Elmer Addition (Added startingPoint offset to calculation)
+        // (2*incline*raised)^0.5 
+        _tokens = sqrt(uint(10).mul(_inclineRAY).mul(_raised).div(RAY));
     }
 
-    function pureCalculateTokensRecieved(uint _inclineRAY, uint _alreadyRaised, uint _supplied, uint _startingPoint) 
+    function pureCalculateTokensRecieved(uint _inclineRAY, uint _alreadyRaised, uint _supplied) 
         public
         pure
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied), _startingPoint).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised, _startingPoint)); // Elmer Addition (Added startingPoint to calculation)
+        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied)).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised));
     }
 
     function calculateTokensReceived(uint _supplied)
@@ -134,15 +104,15 @@ contract Sale is DSMath
         view
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateTokensRecieved(inclineRAY, raised, _supplied, startingPoint);        // Elmer Addition (Added startingPoint to calculation)
+        _tokensReturned = pureCalculateTokensRecieved(inclineRAY, raised, _supplied);       
     }
 
-    function viewCalculatePricePerToken(uint _inclineRAY, uint _alreadyRaised, uint _supplied)              
+    function pureCalculatePricePerToken(uint _inclineRAY, uint _alreadyRaised, uint _supplied)              
         public
-        view                                                                        // Elmer Addition (Changed from pure to view)
+        pure                                                                        
         returns(uint _price)
     {
-        _price = pureCalculateTokensRecieved(_inclineRAY, _alreadyRaised, _supplied, startingPoint).mul(WAD).div(_supplied);
+        _price = pureCalculateTokensRecieved(_inclineRAY, _alreadyRaised, _supplied).mul(WAD).div(_supplied);
     }
 
     function calculatePricePerToken(uint _supplied)
@@ -150,7 +120,7 @@ contract Sale is DSMath
         view
         returns(uint _price)
     {
-        _price = viewCalculatePricePerToken(inclineRAY, raised, _supplied);
+        _price = pureCalculatePricePerToken(inclineRAY, raised, _supplied);
     }
 
     // babylonian method
