@@ -167,14 +167,3 @@ contract Sale is DSMath
         }
     }
 }
-
-
-contract LEVR is Context, ERC20Detailed, ERC20Mintable, ERC20Burnable
-{
-    using SafeMath for uint;
-
-    constructor()
-        public
-        ERC20Detailed("Foundry LEVR Token", "LEVR", 18)
-    { }
-}
