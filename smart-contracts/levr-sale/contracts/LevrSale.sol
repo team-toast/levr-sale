@@ -82,8 +82,8 @@ contract Sale is DSMath
         (bool success,) = gulper.call.value(msg.value)("");
         require(success, "gulper malfunction");
 
-        tokensIssued = tokensIssued + tokensAssigned;   // Elmer Addition (Update tokensIssued)
-        raised = raised + msg.value;                    // Elmer Addition (Update eth amount raised)
+        tokensIssued = tokensIssued.add(tokensAssigned);   // Elmer Addition (Update tokensIssued)
+        raised = raised.add(msg.value);                    // Elmer Addition (Update eth amount raised)
 
         emit Bought(_retriever, tokensAssigned);
     }
@@ -126,7 +126,7 @@ contract Sale is DSMath
         pure
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied), _startingPoint).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised, _startingPoint) + 1000000000000000000); // Elmer Addition (Added startingPoint to calculation)
+        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised.add(_supplied), _startingPoint).sub(pureCalculateSupply(_inclineRAY, _alreadyRaised, _startingPoint)); // Elmer Addition (Added startingPoint to calculation)
     }
 
     function calculateTokensReceived(uint _supplied)
