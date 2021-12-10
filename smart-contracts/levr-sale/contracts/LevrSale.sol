@@ -74,7 +74,7 @@ contract Sale is DSMath
     }
 
     function mintTokens(address _receiver, uint _amount)
-        public 
+        private 
     {
         tokenOnSale.mint(_receiver, _amount.div(7).mul(4));  // 4/7
         tokenOnSale.mint(treasury, _amount.div(7));          // 1/7

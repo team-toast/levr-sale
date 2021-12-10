@@ -10,19 +10,23 @@ contract("LEVR", (accounts) => {
 
     let etherToSpend = "0.02";
     let incline = "10000000000000000000000000000000000000000000000000000000"; //10000000000 *10^18 *10^27
-    let startingPoint = "200000000000000000"; //0.2*10^18 wei
+    //let startingPoint = "200000000000000000"; //0.2*10^18 wei
     let issueRecords = [];
     let numberOfBuys = 100;
 
     const saleContract = await sale.new(
       incline,
-      startingPoint,
+      //startingPoint,
       levrContract.address,
       accounts[1], // gulper
       accounts[4], // treasury
       accounts[2], // liquidity
       accounts[3] // foundryTreasury
     );
+
+    //console.log(levrContract.methods);
+
+    await levrContract.addMinter(saleContract.address);
 
     let tokensIssued = 0;
     let totalRaised = 0;
