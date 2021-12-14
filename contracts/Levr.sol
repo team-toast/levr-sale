@@ -21,10 +21,19 @@ contract LEVR is ERC20, ERC20Burnable, AccessControl
         _grantRole(MINTER_ROLE, _newMinter);
     }
 
-    function mint(address to, uint256 amount) 
+    function mint(address _to, uint256 _amount) 
         public 
         onlyRole(MINTER_ROLE) 
+        returns (bool)
     {
-        _mint(to, amount);
+        _mint(_to, _amount);
+        return true;
+    }
+
+    function isMinter(address _account)
+        public 
+        returns (bool)
+    {
+        
     }
 }

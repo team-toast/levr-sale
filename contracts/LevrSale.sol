@@ -1,14 +1,14 @@
 pragma solidity ^0.8.0;
 
 interface IERC20Mintable {
-    function mint(address, uint) external ;
+    function mint(address, uint) external returns (bool);
 }
 
 contract Sale
 {
     uint constant ONE_PERC = 10 ** 16;
     uint constant ONE_HUNDRED_PERC = 10 ** 18;
-    uint constant STARTING_POINT = 10 ** 18;
+    uint constant STARTING_POINT = 5 ** 18;
     uint constant WAD = 10**18;
     uint constant RAY = 10**27;
 
