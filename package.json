@@ -4,19 +4,21 @@
   "description": "derived ether",
   "main": "hardhat.config.js",
   "dependencies": {
-    "@openzeppelin/contracts": "^2.5.0",
+    "@openzeppelin/contracts": "^4.4.0",
     "csv-writer": "^1.6.0"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-ethers": "^2.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@tenderly/hardhat-tenderly": "^1.0.12",
+    "chai": "^4.3.4",
     "concurrently": "^6.4.0",
-    "ethereum-waffle": "^3.3.0",
-    "ethers": "^5.3.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.2",
     "ganache-cli": "^6.12.2",
-    "hardhat": "^2.3.0",
-    "truffle": "^5.3.8"
+    "hardhat": "^2.7.1",
+    "truffle": "^5.3.8",
+    "web3": "^1.5.3"
   },
   "repository": {
     "type": "git",
@@ -28,12 +30,10 @@
   },
   "homepage": "https://github.com/team-toast/deth#readme",
   "scripts": {
-    "ganache": "ganache-cli --networkId $npm_package_config_ganache_networkId --allowUnlimitedContractSize --gasLimit $npm_package_config_ganache_gasLimit --gasPrice $npm_package_config_ganache_gasPrice",
-    "start": "concurrently \"npm run ganache\" \"npm run migrate\"",
+    "start": "concurrently \"npx hardhat node --fork https://arb-mainnet.g.alchemy.com/v2/3VktAs9-jOfFCrGAiD-dKd4KzggT13rf --fork-block-number 3843242\"",
     "npmCD": "\"cd ./smart-contracts/levr-sale/\"",
     "npmPWD": "\"pwd\"",
-    "migrate": "cd ./smart-contracts/levr-sale/ && rm -rf build && truffle migrate --reset --compile-all --network development",
-    "test": "concurrently cd ./smart-contracts/levr-sale/ && truffle test"
+    "test": "concurrently \"npx hardhat test --network localhost\""
   },
   "config": {
     "ganache": {
