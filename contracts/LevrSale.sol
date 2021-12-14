@@ -1,6 +1,7 @@
 pragma solidity ^0.8.0;
 
-interface IERC20Mintable {
+interface IERC20Mintable 
+{
     function mint(address, uint) external returns (bool);
 }
 
