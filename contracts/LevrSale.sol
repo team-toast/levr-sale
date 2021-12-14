@@ -6,15 +6,14 @@ interface IERC20Mintable {
 
 contract Sale
 {
-    uint constant ONE_PERC = 10 ** 16;
-    uint constant ONE_HUNDRED_PERC = 10 ** 18;
-    uint constant STARTING_POINT = 5 ** 18;
+    uint constant ONE_PERC = 10**16;
+    uint constant ONE_HUNDRED_PERC = 10**18;
+    uint constant STARTING_POINT = 5 * 10**18;
     uint constant WAD = 10**18;
-    uint constant RAY = 10**27;
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
     uint public tokensIssued;                       
-    uint public inclineRAY;                         
+    uint public inclineWAD;                         
 
     IERC20Mintable public tokenOnSale;
 
@@ -24,14 +23,14 @@ contract Sale
     address public foundryTreasury;
 
     constructor(
-            uint _inclineRAY,
+            uint _inclineWAD,
             IERC20Mintable _tokenOnSale, 
             address _gulper, 
             address _treasury, 
             address _liquidity, 
             address _foundryTreasury)
     {
-        inclineRAY = _inclineRAY;
+        inclineWAD = _inclineWAD;
         tokenOnSale = _tokenOnSale;
         gulper = _gulper;
         treasury = _treasury;
@@ -78,21 +77,21 @@ contract Sale
         tokenOnSale.mint(foundryTreasury, _amount/7);   // 1/7
     }
 
-    function pureCalculateSupply(uint _inclineRAY, uint _raised)
+    function pureCalculateSupply(uint _inclineWAD, uint _raised)
         public
         pure
         returns(uint _tokens)
     {
         // (2*incline*raised)^0.5 
-        _tokens = sqrt(uint(10) * _inclineRAY * _raised / RAY);
+        _tokens = sqrt(uint(2) * _inclineWAD * _raised / WAD);
     }
 
-    function pureCalculateTokensRecieved(uint _inclineRAY, uint _alreadyRaised, uint _supplied) 
+    function pureCalculateTokensRecieved(uint _inclineWAD, uint _alreadyRaised, uint _supplied) 
         public
         pure
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateSupply(_inclineRAY, _alreadyRaised + _supplied) - pureCalculateSupply(_inclineRAY, _alreadyRaised);
+        _tokensReturned = pureCalculateSupply(_inclineWAD, _alreadyRaised + _supplied) - pureCalculateSupply(_inclineWAD, _alreadyRaised);
     }
 
     function calculateTokensReceived(uint _supplied)
@@ -100,15 +99,15 @@ contract Sale
         view
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateTokensRecieved(inclineRAY, raised, _supplied);       
+        _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);       
     }
 
-    function pureCalculatePricePerToken(uint _inclineRAY, uint _alreadyRaised, uint _supplied)              
+    function pureCalculatePricePerToken(uint _inclineWAD, uint _alreadyRaised, uint _supplied)              
         public
         pure                                                                        
         returns(uint _price)
     {
-        _price = pureCalculateTokensRecieved(_inclineRAY, _alreadyRaised, _supplied)*WAD/_supplied;
+        _price = pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied) * WAD / _supplied;
     }
 
     function calculatePricePerToken(uint _supplied)
@@ -116,7 +115,7 @@ contract Sale
         view
         returns(uint _price)
     {
-        _price = pureCalculatePricePerToken(inclineRAY, raised, _supplied);
+        _price = pureCalculatePricePerToken(inclineWAD, raised, _supplied);
     }
 
     // babylonian method
