@@ -18,7 +18,7 @@ describe("LevrSale", function () {
 
     console.log("LEVR at address:", levr.address);
 
-    let incline = "10000000000000000000000000000000000000000000000000000000"; //10000000000 *10^18 *10^27
+    let incline = "389564392300000000000000000000000000000000000000"; //200000000000000000000000000000 *10^18 (2.5x10^11 x 10^18)
     const [account0, account1, account2, account3, account4] =
       await ethers.getSigners();
     console.log(account1.address);
@@ -51,6 +51,15 @@ describe("LevrSale", function () {
       to: accountToImpersonate,
       value: ethers.utils.parseEther("1.0"),
     });
+    // send enought ether to account0 to do all the buys
+    await account1.sendTransaction({
+      to: account0.address,
+      value: ethers.utils.parseEther("9999.0"),
+    });
+    await account2.sendTransaction({
+      to: account0.address,
+      value: ethers.utils.parseEther("9999.0"),
+    });
     console.log("Admin Balance: ", adminBal);
     // admin.sendTransaction(await levr.addMinter(sale.address));
     await levr.connect(admin).addMinter(sale.address);
@@ -63,7 +72,7 @@ describe("LevrSale", function () {
     let issueRecords = [];
 
     let numberOfBuys = 100;
-    let etherToSpend = "100.0";
+    let etherToSpend = "200.0";
 
     for (let i = 0; i < numberOfBuys; i++) {
       amountRaised = await sale.raised();
@@ -84,18 +93,24 @@ describe("LevrSale", function () {
 
       issueRecords.push([
         i,
-        web3.utils.fromWei(totalRaised.toString()),
-        web3.utils.fromWei(tokensIssued.toString()),
+        web3.utils.fromWei(totalRaised.toString().replace(",", "")),
+        web3.utils.fromWei(tokensIssued.toString().replace(",", "")),
       ]);
     }
 
     const csvWriter = createCsvWriter({
       header: ["Buy Count", "Raised", "Total Tokens Issued"],
       path: "levrData.csv",
+      fieldDelimiter: ";",
     });
 
     csvWriter.writeRecords(issueRecords).then(() => {
       console.log("Written to csv");
     });
+
+    console.log(
+      "Total Supply: ",
+      web3.utils.fromWei((await levr.totalSupply()).toString())
+    );
   });
 });
