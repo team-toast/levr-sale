@@ -9,7 +9,7 @@ contract Sale
 {
     uint constant ONE_PERC = 10**16;
     uint constant ONE_HUNDRED_PERC = 10**18;
-    uint constant STARTING_POINT = 5 * 10**18;
+    uint constant STARTING_POINT = 1000 * 10**18;
     uint constant WAD = 10**18;
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
