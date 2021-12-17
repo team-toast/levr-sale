@@ -18,7 +18,10 @@ describe("LevrSale", function () {
 
     console.log("LEVR at address:", levr.address);
 
-    let incline = "389564392300000000000000000000000000000000000000"; //200000000000000000000000000000 *10^18 (2.5x10^11 x 10^18)
+    let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
+    //let incline = "305249378105604451351096324563797880934725117350"; // 1% Start
+    //let incline = "465831239517769992455746636833534334196354427279"; // 10% Start
+
     const [account0, account1, account2, account3, account4] =
       await ethers.getSigners();
     console.log(account1.address);
