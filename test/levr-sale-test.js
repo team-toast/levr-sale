@@ -195,9 +195,20 @@ describe("LevrSale", function () {
     );
     await sale.deployed();
 
-    let price = await sale.calculatePricePerToken(web3.utils.toWei("1"));
+    let raisedBefore = await sale.raised();
+
+    let price = await sale.calculatePricePerToken(web3.utils.toWei("200"));
 
     console.log("Token Price: ", web3.utils.fromWei(price.toString()));
+    console.log(
+      "Calculated token Price: ",
+      web3.utils.fromWei(
+        calculatePrice(
+          web3.utils.toWei("200"),
+          raisedBefore.toString()
+        ).toString()
+      )
+    );
   });
   return; // Don't run graph data generation
 
@@ -342,11 +353,20 @@ function calculateTokensReceived(ethAmount, raisedBefore) {
   return tokens;
 }
 
-function calculatePrice(supplied, raisedBefore) {
+function calculatePrice(_supplied, _raisedBefore) {
   // _price = pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied) * WAD / _supplied;
+
+  const raisedBefore = BigNumber.from(_raisedBefore);
+  const supplied = BigNumber.from(_supplied);
+  const ten = BigNumber.from(10);
   const wad = ten.pow(18);
-  let tokensReceived = calculateTokensReceived(supplied, raisedBefore);
-  return tokensReceived.mul(wad).div(supplied);
+
+  let tokensReceived = calculateTokensReceived(
+    supplied.toString(),
+    raisedBefore.toString()
+  );
+
+  return supplied.mul(wad).div(tokensReceived);
 }
 
 function sqrt(value) {

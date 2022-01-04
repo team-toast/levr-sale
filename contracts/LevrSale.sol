@@ -108,7 +108,8 @@ contract Sale
         pure                                                                        
         returns(uint _price)
     {
-        _price = pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied) * WAD / _supplied;
+        // _price = pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied) * WAD / _supplied; // Was previously
+        _price = _supplied * WAD / pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied); // Elmer change
     }
 
     function calculatePricePerToken(uint _supplied)
@@ -116,7 +117,8 @@ contract Sale
         view
         returns(uint _price)
     {
-        _price = pureCalculatePricePerToken(inclineWAD, raised, _supplied);
+        _price = pureCalculatePricePerToken(inclineWAD, raised, _supplied); // 0.0000750709074
+                                                                            // 0.000075070907398619
     }
 
     // babylonian method
