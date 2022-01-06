@@ -13,6 +13,7 @@ let levr;
 let Sale;
 let sale;
 let [account0, account1, account2, account3, account4] = ["", "", "", "", ""];
+let prov = ethers.getDefaultProvider();
 
 describe("LevrSale Tests", function () {
   // Reset to fork before each test
@@ -26,6 +27,12 @@ describe("LevrSale Tests", function () {
     // Get test accounts
     [account0, account1, account2, account3, account4] =
       await ethers.getSigners();
+
+    // // Get rid of gulper account eth
+    // await account1.sendTransaction({
+    //   to: "0x0000000000000000000000000000000000000000",
+    //   value: ethers.utils.parseEther("1000.0"),
+    // });
 
     // Deploy Sale
     Sale = await hre.ethers.getContractFactory("Sale");
@@ -59,6 +66,7 @@ describe("LevrSale Tests", function () {
     // Use admin address to make Sale a minter of Levr token
     await levr.connect(admin).addMinter(sale.address);
 
+    let account1BalanceBefore = await account1.getBalance();
     // Buy 0 Levr
     let buyTx = await sale.buy(account1.address, {
       value: web3.utils.toWei("0"),
@@ -70,13 +78,15 @@ describe("LevrSale Tests", function () {
     //   console.log("Total Raised: ", totalRaised);
 
     let account0Balance = await levr.balanceOf(account0.address);
-    let account1Balance = await levr.balanceOf(account1.address);
+    let account1Balance = await account1.getBalance(); // eth balance of gulper
     let account2Balance = await levr.balanceOf(account2.address);
     let account3Balance = await levr.balanceOf(account3.address);
     let account4Balance = await levr.balanceOf(account4.address);
 
     expect(account0Balance).to.equal("0");
-    expect(account1Balance).to.equal("0");
+    expect(account1Balance.sub(account1BalanceBefore)).to.equal(
+      web3.utils.toWei("0")
+    );
     expect(account2Balance).to.equal("0");
     expect(account3Balance).to.equal("0");
     expect(account4Balance).to.equal("0");
@@ -105,10 +115,12 @@ describe("LevrSale Tests", function () {
     // Use admin address to make Sale contract a minter of Levr token
     await levr.connect(admin).addMinter(sale.address);
 
-    let amountToBuy = "1";
+    let amountToBuy = "0.1";
     let raisedBefore = await sale.raised();
+    let account1BalanceBefore = await account1.getBalance();
+
     // Buy 1 eth of Levr
-    let buyTx = await sale.buy(account1.address, {
+    let buyTx = await sale.buy(account0.address, {
       value: web3.utils.toWei(amountToBuy),
     });
 
@@ -118,7 +130,7 @@ describe("LevrSale Tests", function () {
     // console.log("Total Raised: ", totalRaised);
 
     let account0Balance = await levr.balanceOf(account0.address);
-    let account1Balance = await levr.balanceOf(account1.address);
+    let account1Balance = await account1.getBalance(); // eth balance of gulper
     let account2Balance = await levr.balanceOf(account2.address);
     let account3Balance = await levr.balanceOf(account3.address);
     let account4Balance = await levr.balanceOf(account4.address);
@@ -137,20 +149,146 @@ describe("LevrSale Tests", function () {
     //   "Calculated tokens: ",
     //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
     // );
-    expect(account0Balance).to.equal("0");
-    expect(account1Balance).to.equal(
+    expect(account0Balance).to.equal(
       calculatedTokenAmount.div(7).mul(4).toString()
+    );
+    expect(account1Balance.sub(account1BalanceBefore)).to.equal(
+      web3.utils.toWei(amountToBuy)
     );
     expect(account2Balance).to.equal(calculatedTokenAmount.div(7).toString());
     expect(account3Balance).to.equal(calculatedTokenAmount.div(7).toString());
     expect(account4Balance).to.equal(calculatedTokenAmount.div(7).toString());
     expect(tokensIssued).to.equal(calculatedTokenAmount.toString());
-    expect(totalRaised).to.equal("1001000000000000000000");
+    expect(totalRaised).to.equal(
+      raisedBefore.add(web3.utils.toWei(amountToBuy))
+    );
 
     // EVENTS
     expect(buyTx)
       .to.emit(sale, "Bought")
-      .withArgs(account1.address, calculatedTokenAmount.toString());
+      .withArgs(account0.address, calculatedTokenAmount.toString());
+  });
+
+  it("LS_B: Buy zero Levr (By just sending eth)", async function () {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [accountToImpersonate],
+    });
+
+    // admin has minting rights
+    const admin = await ethers.getSigner(accountToImpersonate);
+
+    // send ether to admin account
+    await account0.sendTransaction({
+      to: accountToImpersonate,
+      value: ethers.utils.parseEther("1.0"),
+    });
+
+    // Use admin address to make Sale a minter of Levr token
+    await levr.connect(admin).addMinter(sale.address);
+
+    let account1BalanceBefore = await account1.getBalance();
+    // Buy 0 Levr
+    let buyTx = await account0.sendTransaction({
+      to: sale.address,
+      value: ethers.utils.parseEther("0"),
+    });
+
+    // STATE
+    let totalRaised = await sale.raised();
+    let tokensIssued = await sale.tokensIssued();
+    //   console.log("Total Raised: ", totalRaised);
+
+    let account0Balance = await levr.balanceOf(account0.address);
+    let account1Balance = await account1.getBalance(); // eth balance of gulper
+    let account2Balance = await levr.balanceOf(account2.address);
+    let account3Balance = await levr.balanceOf(account3.address);
+    let account4Balance = await levr.balanceOf(account4.address);
+
+    expect(account0Balance).to.equal("0");
+    expect(account1Balance.sub(account1BalanceBefore)).to.equal(
+      web3.utils.toWei("0")
+    );
+    expect(account2Balance).to.equal("0");
+    expect(account3Balance).to.equal("0");
+    expect(account4Balance).to.equal("0");
+    expect(tokensIssued).to.equal("0");
+    expect(totalRaised).to.equal(totalRaised);
+
+    // EVENTS
+    expect(buyTx).to.emit(sale, "Bought").withArgs(account0.address, "0");
+  });
+
+  it("LS_B: Buy Levr (By just sending eth)", async function () {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [accountToImpersonate],
+    });
+
+    // admin has minting rights
+    const admin = await ethers.getSigner(accountToImpersonate);
+
+    // send ether to admin account
+    await account0.sendTransaction({
+      to: accountToImpersonate,
+      value: ethers.utils.parseEther("1.0"),
+    });
+
+    // Use admin address to make Sale contract a minter of Levr token
+    await levr.connect(admin).addMinter(sale.address);
+
+    let amountToBuy = "1";
+    let raisedBefore = await sale.raised();
+    let account1BalanceBefore = await account1.getBalance();
+    // Buy 1 eth of Levr by simply sending eth to the contract
+    let buyTx = await account0.sendTransaction({
+      to: sale.address,
+      value: ethers.utils.parseEther(amountToBuy),
+    });
+
+    // STATE
+    let totalRaised = await sale.raised();
+    let tokensIssued = await sale.tokensIssued();
+    // console.log("Total Raised: ", totalRaised);
+
+    let account0Balance = await levr.balanceOf(account0.address);
+    let account1Balance = await account1.getBalance(); // eth balance of gulper
+    let account2Balance = await levr.balanceOf(account2.address);
+    let account3Balance = await levr.balanceOf(account3.address);
+    let account4Balance = await levr.balanceOf(account4.address);
+
+    // console.log(
+    //   "Account 0 Tokens: ",
+    //   web3.utils.fromWei(account1Balance.toString())
+    // );
+
+    // Calculate expected tokens received
+    let calculatedTokenAmount = calculateTokensReceived(
+      web3.utils.toWei(amountToBuy),
+      raisedBefore
+    );
+    // console.log(
+    //   "Calculated tokens: ",
+    //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
+    // );
+    expect(account0Balance).to.equal(
+      calculatedTokenAmount.div(7).mul(4).toString()
+    );
+    expect(account1Balance.sub(account1BalanceBefore)).to.equal(
+      web3.utils.toWei(amountToBuy)
+    );
+    expect(account2Balance).to.equal(calculatedTokenAmount.div(7).toString());
+    expect(account3Balance).to.equal(calculatedTokenAmount.div(7).toString());
+    expect(account4Balance).to.equal(calculatedTokenAmount.div(7).toString());
+    expect(tokensIssued).to.equal(calculatedTokenAmount.toString());
+    expect(totalRaised).to.equal(
+      raisedBefore.add(web3.utils.toWei(amountToBuy))
+    );
+
+    // EVENTS
+    expect(buyTx)
+      .to.emit(sale, "Bought")
+      .withArgs(account0.address, calculatedTokenAmount.toString());
   });
 
   it("LS_CPPT: Calculate Price; Supplied 0 eth", async function () {
@@ -214,27 +352,24 @@ describe("LevrSale Tests", function () {
   it("LS_CTR: Supplied 1 eth", async function () {
     let amountToBuy = "1";
     let raisedBefore = await sale.raised();
-    // Buy 1 eth of Levr
+    // Calculate tokens received for 1 eth of Levr
     let tokenAmount = await sale.calculateTokensReceived(
       web3.utils.toWei(amountToBuy)
     );
 
-    // console.log(
-    //   "Account 0 Tokens: ",
-    //   web3.utils.fromWei(account1Balance.toString())
-    // );
+    // console.log("amountToBuy: ", web3.utils.toWei(amountToBuy));
+
+    let account1Balance = await levr.balanceOf(account1.address);
+    // console.log("Tokens: ", web3.utils.fromWei(tokenAmount.toString()));
 
     // Calculate expected tokens received
     let calculatedTokenAmount = calculateTokensReceived(
-      web3.utils.toWei(amountToBuy),
-      raisedBefore
+      web3.utils.toWei(amountToBuy).toString(),
+      raisedBefore.toString()
     );
-    // console.log(
-    //   "Calculated tokens: ",
-    //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
-    // );
+    // console.log("Calculated tokens: ", calculatedTokenAmount.toString());
 
-    expect(tokenAmount).to.equal(calculatedTokenAmount.toString());
+    expect(tokenAmount.toString()).to.equal(calculatedTokenAmount.toString());
   });
 
   return; // Don't run graph data generation
@@ -250,6 +385,9 @@ describe("LevrSale Tests", function () {
     //let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
     //let incline = "305249378105604451351096324563797880934725117350"; // 1% Start
     //let incline = "465831239517769992455746636833534334196354427279"; // 10% Start
+
+    // Wolfram equation to get incline value
+    // Divide[\(40)2 \(40)2*Power[10,21]\(41) Power[\(40)1*Power[10,26]\(41),2] + \(40)2*Power[10,22]\(41) Power[1*Power[10,26],2] + 2 sqrt\(40)Power[\(40)2*Power[10,21]\(41),2] Power[\(40)\(40)1*Power[10,26]\(41),4] + \(40)2*Power[10,21]\(41) \(40)2*Power[10,22]\(41) Power[1*Power[10,26],4]\(41)\(41),\(40)2 Power[\(40)2*Power[10,22]\(41),2]\(41)]
 
     const [account0, account1, account2, account3, account4] =
       await ethers.getSigners();
@@ -281,7 +419,7 @@ describe("LevrSale Tests", function () {
       to: accountToImpersonate,
       value: ethers.utils.parseEther("1.0"),
     });
-    // send enought ether to account0 to do all the buys
+    // send enough ether to account0 to do all the buys
     await account1.sendTransaction({
       to: account0.address,
       value: ethers.utils.parseEther("9999.0"),
@@ -363,19 +501,23 @@ async function resetChain() {
 function calculateTokensReceived(ethAmount, raisedBefore) {
   const eth = BigNumber.from(ethAmount);
   const raised = BigNumber.from(raisedBefore);
-  const inc = BigNumber.from(incline);
+  let inc = BigNumber.from(incline);
 
-  // sqrt(uint(2) * _inclineWAD * _raised / WAD);
   const two = BigNumber.from(2);
   const ten = BigNumber.from(10);
   const wad = ten.pow(18);
-  let tokens = two.mul(inc).mul(eth.add(raised).div(wad));
+
+  inc = inc.div(wad);
+
+  // sqrt(uint(2) * _inclineWAD * _raised / WAD);
+
+  let tokens = two.mul(inc).mul(eth.add(raised));
   tokens = sqrt(tokens);
-  let alreadyRaised = two.mul(inc).mul(raised).div(wad);
+  let alreadyRaised = two.mul(inc).mul(raised);
   alreadyRaised = sqrt(alreadyRaised);
   tokens = tokens.sub(alreadyRaised);
 
-  //console.log("Tokens: ", tokens);
+  // console.log("Tokens (func): ", tokens);
 
   return tokens;
 }

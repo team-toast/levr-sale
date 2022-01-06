@@ -57,7 +57,6 @@ contract Sale
         payable
     {
         uint tokensAssigned = calculateTokensReceived(msg.value);
-
         
         (bool success,) = gulper.call{value:msg.value}("");
         require(success, "gulper malfunction");
