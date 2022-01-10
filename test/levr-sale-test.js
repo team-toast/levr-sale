@@ -48,6 +48,15 @@ describe("LevrSale Tests", function () {
     await sale.deployed();
   });
 
+  it("LS_C: Constructor", async function () {
+    expect(await sale.inclineWAD()).to.equal(incline);
+    expect(await sale.tokenOnSale()).to.equal(levr.address);
+    expect(await sale.gulper()).to.equal(account1.address);
+    expect(await sale.treasury()).to.equal(account4.address);
+    expect(await sale.liquidity()).to.equal(account2.address);
+    expect(await sale.foundryTreasury()).to.equal(account3.address);
+  });
+
   it("LS_B: Buy zero Levr", async function () {
     await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
