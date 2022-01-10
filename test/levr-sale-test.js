@@ -169,6 +169,52 @@ describe("LevrSale Tests", function () {
       .withArgs(account0.address, calculatedTokenAmount.toString());
   });
 
+  it("LS_B: Buy Levr with invalid gulper", async function () {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [accountToImpersonate],
+    });
+
+    // Deply invalid gulper
+    let BlankContract = await hre.ethers.getContractFactory("BlankContract");
+    let blankContract = await BlankContract.deploy();
+    // Deploy Sale
+    let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
+    let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
+      incline,
+      levr.address,
+      blankContract.address, // gulper
+      account4.address, // treasury
+      account2.address, // liquidity
+      account3.address // foundryTreasury
+    );
+
+    await saleWithInvalidGulper.deployed();
+
+    // admin has minting rights
+    const admin = await ethers.getSigner(accountToImpersonate);
+
+    // send ether to admin account
+    await account0.sendTransaction({
+      to: accountToImpersonate,
+      value: ethers.utils.parseEther("1.0"),
+    });
+
+    // Use admin address to make Sale contract a minter of Levr token
+    await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
+
+    let amountToBuy = "1.0";
+    let raisedBefore = await saleWithInvalidGulper.raised();
+    let account1BalanceBefore = await account1.getBalance();
+
+    // Should Revert
+    await expect(
+      saleWithInvalidGulper.buy(account0.address, {
+        value: web3.utils.toWei(amountToBuy),
+      })
+    ).to.be.revertedWith("reverted with reason string 'gulper malfunction'");
+  });
+
   it("LS_B: Buy zero Levr (By just sending eth)", async function () {
     await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -291,6 +337,53 @@ describe("LevrSale Tests", function () {
       .withArgs(account0.address, calculatedTokenAmount.toString());
   });
 
+  it("LS_B: Buy Levr with invalid gulper (by just sending eth)", async function () {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [accountToImpersonate],
+    });
+
+    // Deploy invalid gulper
+    let BlankContract = await hre.ethers.getContractFactory("BlankContract");
+    let blankContract = await BlankContract.deploy();
+    // Deploy Sale
+    let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
+    let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
+      incline,
+      levr.address,
+      blankContract.address, // gulper
+      account4.address, // treasury
+      account2.address, // liquidity
+      account3.address // foundryTreasury
+    );
+
+    await saleWithInvalidGulper.deployed();
+
+    // admin has minting rights
+    const admin = await ethers.getSigner(accountToImpersonate);
+
+    // send ether to admin account
+    await account0.sendTransaction({
+      to: accountToImpersonate,
+      value: ethers.utils.parseEther("1.0"),
+    });
+
+    // Use admin address to make Sale contract a minter of Levr token
+    await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
+
+    let amountToBuy = "1.0";
+    let raisedBefore = await saleWithInvalidGulper.raised();
+    let account1BalanceBefore = await account1.getBalance();
+
+    // Should Revert
+    await expect(
+      account0.sendTransaction({
+        to: saleWithInvalidGulper.address,
+        value: ethers.utils.parseEther(amountToBuy),
+      })
+    ).to.be.revertedWith("reverted with reason string 'gulper malfunction'");
+  });
+
   it("LS_CPPT: Calculate Price; Supplied 0 eth", async function () {
     let amountEth = "0";
 
@@ -372,7 +465,7 @@ describe("LevrSale Tests", function () {
     expect(tokenAmount.toString()).to.equal(calculatedTokenAmount.toString());
   });
 
-  return; // Don't run graph data generation
+  // return; // Don't run graph data generation
 
   it("Multiple buy Test", async function () {
     //let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
@@ -389,7 +482,6 @@ describe("LevrSale Tests", function () {
 
     const admin = await ethers.getSigner(accountToImpersonate);
     // console.log("Admin: ", admin);
-    const adminBal = await admin.getBalance();
     await account0.sendTransaction({
       to: accountToImpersonate,
       value: ethers.utils.parseEther("1.0"),
