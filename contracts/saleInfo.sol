@@ -1,4 +1,4 @@
-pragma solidity ^0.8.0;
+pragma solidity 0.8.7;
 
 interface ISale 
 {
@@ -21,6 +21,13 @@ interface ISale
         external
         view
         returns(uint);
+
+    function addToRaised(uint256 _addition)
+        external;
+
+    function subractFromRaised(uint256 _sub)
+        external;
+
 }
 
 contract SaleInfo 
@@ -42,6 +49,18 @@ contract SaleInfo
         tokensReceived = Sale.calculateTokensReceived(_supplied);
         raised = Sale.raised();
         tokensIssued = Sale.tokensIssued();
+    }
+
+    function addRaised(uint _add)
+    external
+    {
+        Sale.addToRaised(_add);
+    }
+
+    function subtractRaised(uint _sub)
+    external
+    {
+        Sale.subractFromRaised(_sub);
     }
 
 }
