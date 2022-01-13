@@ -10,3 +10,4 @@ typechain
 cache
 artifacts
 .vscode/settings.json
+*flat.sol

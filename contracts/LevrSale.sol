@@ -61,8 +61,8 @@ contract Sale
         (bool success,) = gulper.call{value:msg.value}("");
         require(success, "gulper malfunction");
 
-        tokensIssued = tokensIssued + tokensAssigned;   // Elmer Addition (Update tokensIssued)
-        raised = raised + msg.value;                    // Elmer Addition (Update eth amount raised)
+        tokensIssued = tokensIssued + tokensAssigned;
+        raised = raised + msg.value;
 
         mintTokens(_receiver, tokensAssigned);
         emit Bought(_receiver, tokensAssigned);
@@ -71,7 +71,7 @@ contract Sale
     function mintTokens(address _receiver, uint _amount)
         private 
     {
-        tokenOnSale.mint(_receiver, _amount/7*4);  // 4/7
+        tokenOnSale.mint(_receiver, _amount/7*4);       // 4/7
         tokenOnSale.mint(treasury, _amount/7);          // 1/7
         tokenOnSale.mint(liquidity, _amount/7);         // 1/7
         tokenOnSale.mint(foundryTreasury, _amount/7);   // 1/7
@@ -102,13 +102,36 @@ contract Sale
         _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);       
     }
 
-    function pureCalculatePricePerToken(uint _inclineWAD, uint _alreadyRaised, uint _supplied)              
+    function pureCalculatePrice(uint _inclineWAD, uint _tokensIssued)
         public
-        pure                                                                        
+        pure
         returns(uint _price)
     {
-        // _price = pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied) * WAD / _supplied; // Was previously
-        _price = _supplied * WAD / pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied); // Elmer change
+        _price = _tokensIssued * WAD / _inclineWAD;
+    }
+
+    function calculatePrice(uint _tokensIssued)
+        public
+        view
+        returns(uint _price)
+    {
+        _price = pureCalculatePrice(inclineWAD, _tokensIssued);
+    }
+
+    function getCurrentPrice()
+        public
+        view
+        returns(uint _price)
+    {
+        _price = calculatePrice(tokensIssued);
+    }
+
+    function pureCalculatePricePerToken(uint _inclineWAD, uint _alreadyRaised, uint _supplied)              
+        public
+        pure
+        returns(uint _price)
+    {
+        _price = _supplied * WAD / pureCalculateTokensRecieved(_inclineWAD, _alreadyRaised, _supplied);
     }
 
     function calculatePricePerToken(uint _supplied)
@@ -116,8 +139,15 @@ contract Sale
         view
         returns(uint _price)
     {
-        _price = pureCalculatePricePerToken(inclineWAD, raised, _supplied); // 0.0000750709074
-                                                                            // 0.000075070907398619
+        _price = pureCalculatePricePerToken(inclineWAD, raised, _supplied);
+    }
+
+    function pointPriceWAD()
+        public
+        view
+        returns(uint _price)
+    {
+        _price = raised * WAD / tokensIssued;
     }
 
     // babylonian method

@@ -1,4 +1,4 @@
-pragma solidity 0.8.7;
+pragma solidity ^0.8.7;
 
 interface ISale 
 {
@@ -28,6 +28,10 @@ interface ISale
     function subractFromRaised(uint256 _sub)
         external;
 
+    function calculatePrice(uint _tokensIssued)
+        external
+        view
+        returns(uint);
 }
 
 contract SaleInfo 
@@ -41,24 +45,40 @@ contract SaleInfo
     }
 
     function getSaleInfo(uint _supplied)
-    public
-    view
-    returns(uint price, uint tokensReceived, uint raised, uint tokensIssued)
+        public
+        view
+    returns(
+            uint _raisedBefore,
+            uint _totalTokensSoldBefore,
+            uint _priceBefore, 
+            
+            uint _raisedAfter,
+            uint _totalTokensSoldAfter,
+            uint _priceAfter,
+            
+            uint _tokensReceived,
+            uint _pricePaidPerToken)
     {
-        price = Sale.calculatePricePerToken(_supplied);
-        tokensReceived = Sale.calculateTokensReceived(_supplied);
-        raised = Sale.raised();
-        tokensIssued = Sale.tokensIssued();
+        _raisedBefore = Sale.raised();
+        _totalTokensSoldBefore = Sale.tokensIssued();
+        _priceBefore = Sale.calculatePrice(_totalTokensSoldBefore);
+
+        _raisedAfter = _raisedBefore + _supplied;
+        _tokensReceived = Sale.calculateTokensReceived(_supplied);
+        _totalTokensSoldAfter = _totalTokensSoldBefore + _tokensReceived;
+        _priceAfter = Sale.calculatePrice(_totalTokensSoldAfter);
+
+        _pricePaidPerToken = Sale.calculatePricePerToken(_supplied);
     }
 
     function addRaised(uint _add)
-    external
+        external
     {
         Sale.addToRaised(_add);
     }
 
     function subtractRaised(uint _sub)
-    external
+        external
     {
         Sale.subractFromRaised(_sub);
     }
