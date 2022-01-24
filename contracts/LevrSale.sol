@@ -13,14 +13,15 @@ contract Sale
     uint constant WAD = 10**18;
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
-    uint public tokensIssued;                       
+    uint public tokensSold;                       
     uint public inclineWAD;                         
 
     IERC20Mintable public tokenOnSale;
 
+    // gulpers
     address public gulper;
+
     address public treasury;
-    address public liquidity;
     address public foundryTreasury;
 
     constructor(
@@ -28,14 +29,12 @@ contract Sale
             IERC20Mintable _tokenOnSale, 
             address _gulper, 
             address _treasury, 
-            address _liquidity, 
             address _foundryTreasury)
     {
         inclineWAD = _inclineWAD;
         tokenOnSale = _tokenOnSale;
         gulper = _gulper;
         treasury = _treasury;
-        liquidity = _liquidity;
         foundryTreasury = _foundryTreasury;
     }
 
@@ -61,7 +60,7 @@ contract Sale
         (bool success,) = gulper.call{value:msg.value}("");
         require(success, "gulper malfunction");
 
-        tokensIssued = tokensIssued + tokensAssigned;
+        tokensSold = tokensSold + tokensAssigned;
         raised = raised + msg.value;
 
         mintTokens(_receiver, tokensAssigned);
@@ -71,10 +70,16 @@ contract Sale
     function mintTokens(address _receiver, uint _amount)
         private 
     {
-        tokenOnSale.mint(_receiver, _amount/7*4);       // 4/7
-        tokenOnSale.mint(treasury, _amount/7);          // 1/7
-        tokenOnSale.mint(liquidity, _amount/7);         // 1/7
-        tokenOnSale.mint(foundryTreasury, _amount/7);   // 1/7
+        tokenOnSale.mint(_receiver, _amount);           // 3
+
+        // Only 66% of the amount issued to the buyer, this is to make the price slightly higher and compensate for the dEh arbitrage that's going to occur.
+        tokenOnSale.mint(gulper, 2*_amount/3);          // 2
+
+        // give the the levr treasury it's share
+        tokenOnSale.mint(treasury, _amount/3);         // 2
+
+        // reward the foundry treasury for it's role
+        tokenOnSale.mint(foundryTreasury, _amount/3);  // 1
     }
 
     function pureCalculateSupply(uint _inclineWAD, uint _raised)
@@ -102,20 +107,20 @@ contract Sale
         _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);       
     }
 
-    function pureCalculatePrice(uint _inclineWAD, uint _tokensIssued)
+    function pureCalculatePrice(uint _inclineWAD, uint _tokensSold)
         public
         pure
         returns(uint _price)
     {
-        _price = _tokensIssued * WAD / _inclineWAD;
+        _price = _tokensSold * WAD / _inclineWAD;
     }
 
-    function calculatePrice(uint _tokensIssued)
+    function calculatePrice(uint _tokensSold)
         public
         view
         returns(uint _price)
     {
-        _price = pureCalculatePrice(inclineWAD, _tokensIssued);
+        _price = pureCalculatePrice(inclineWAD, _tokensSold);
     }
 
     function getCurrentPrice()
@@ -123,7 +128,7 @@ contract Sale
         view
         returns(uint _price)
     {
-        _price = calculatePrice(tokensIssued);
+        _price = calculatePrice(tokensSold);
     }
 
     function pureCalculatePricePerToken(uint _inclineWAD, uint _alreadyRaised, uint _supplied)              
@@ -147,7 +152,7 @@ contract Sale
         view
         returns(uint _price)
     {
-        _price = raised * WAD / tokensIssued;
+        _price = raised * WAD / tokensSold;
     }
 
     // babylonian method
