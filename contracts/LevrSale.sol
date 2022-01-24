@@ -1,4 +1,4 @@
-pragma solidity ^0.8.0;
+pragma solidity 0.8.10;
 
 interface IERC20Mintable 
 {
@@ -36,6 +36,7 @@ contract Sale
         gulper = _gulper;
         treasury = _treasury;
         foundryTreasury = _foundryTreasury;
+        tokensIssued = pureCalculateSupply(inclineWAD, STARTING_POINT);
     }
 
     event Bought
@@ -112,7 +113,11 @@ contract Sale
         pure
         returns(uint _price)
     {
+<<<<<<< HEAD
         _price = _tokensSold * WAD / _inclineWAD;
+=======
+        _price = (_tokensIssued * WAD * WAD) / _inclineWAD;
+>>>>>>> a0170b84b731c0ff42caa8c6d149f6a59a297f1c
     }
 
     function calculatePrice(uint _tokensSold)
