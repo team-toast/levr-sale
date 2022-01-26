@@ -1,9 +1,6 @@
 pragma solidity ^0.8.0;
 
-interface IWeth
-{
-    function wrap() external payable;
-}
+import "./SwapTool.sol";
 
 interface IERC20
 {
@@ -15,14 +12,16 @@ contract Splitter
 {
     // This contract recieved Eth and LEVR tokens and sends them to their respective gulper contracts.
 
-    IERC20 public levrErc20;
-    IERC20 public daiErc20;
-    IERC20 public fryErc20;
-    address public weth;
+    IERC20 public constant levrErc20;
+    IERC20 public constant daiErc20;
+    IERC20 public constant fryErc20;
 
-    address public wethGulper;
-    address public daiGulper;
-    address public dEthGulper;
+    address public constant ethGulper;
+    address public constant daiGulper;
+    address public constant dEthGulper;
+
+    DaiSwapTool public constant daiSwapTool;
+    FrySwapTool public constant frySwapTool;
     
     function Split() 
         public
@@ -41,40 +40,34 @@ contract Splitter
         // * manage the send to the daiGulper
         // * manage the send to the dEthGulper
 
-        WrapEth();
-        uint wethBalance = IERC20(weth).balanceOf(address(this));
+        uint ethBalance = address(this).balance;
         uint levrBalance = levrErc20.balanceOf(address(this));
-        GulpWeth(wethBalance*1000/475, levrBalance);
-        GulpDai(wethBalance*1000/475, levrBalance);
+        GulpEth(ethBalance*1000/475, levrBalance);
+        GulpDai(ethBalance*1000/475, levrBalance);
         GulpDeth(levrBalance);
-        BurnFry(wethBalance);
+        BurnFry(ethBalance);
     }
 
-    function WrapEth()
+    function GulpEth(uint _ethBalance, uint _levrBalance)
         private
     {
-        IWeth(weth).wrap();
+        (bool success,) = ethGulper.call{ value:_ethBalance }(""); 
+        require(success, "ethGulper transfer failed");
+        levrErc20.transfer(ethGulper, _levrBalance);
     }
 
-    function GulpWeth(uint _wethBalance, uint _levrBalance)
+    function GulpDai(uint _ethBalance, uint _levrBalance)
         private
     {
-        IERC20(weth).transfer(wethGulper, _wethBalance);
-        levrErc20.transfer(wethGulper, _levrBalance);
-    }
-
-    function GulpDai(uint _wethBalance, uint _levrBalance)
-        private
-    {
-        SwapWethForDai(_wethBalance);
+        SwapWethForDai(_ethBalance);
         daiErc20.transfer(daiGulper, daiErc20.balanceOf(address(this)));
         levrErc20.transfer(daiGulper, _levrBalance);
     }
 
-    function SwapWethForDai(uint _wethBalance)
+    function SwapWethForDai(uint _ethBalance)
         private
     {
-        // TODO : Swap weth for DAI.
+        daiSwapTool.convertExactEthToDai{ value:_ethBalance }();
     }
 
     function GulpDeth(uint _levrBalance)
@@ -83,16 +76,16 @@ contract Splitter
         levrErc20.transfer(dEthGulper, _levrBalance);
     }
 
-    function BurnFry(uint _wethBalance)
+    function BurnFry(uint _ethBalance)
         private
     {
-        SwapWethForFry(_wethBalance);
+        SwapWethForFry(_ethBalance);
         fryErc20.transfer(address(1), fryErc20.balanceOf(address(this)));
     }
 
-    function SwapWethForFry(uint _wethBalance)
+    function SwapWethForFry(uint _ethBalance)
         private
     {
-        // TODO : Swap weth for Fry.
+        frySwapTool.convertExactEthToFry{ value:_ethBalance }();
     }
 }

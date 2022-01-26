@@ -36,7 +36,7 @@ interface AggregatorV3Interface {
 
     // getRoundData and latestRoundData should both raise "No data present"
     // if they do not have data to report, instead of returning unset values
-    // which could be misinterpreted as actual reported values.
+    // which could be misinterpreted as actual reported v       alues.
     function getRoundData(uint80 _roundId)
         external
         view
@@ -60,7 +60,7 @@ interface AggregatorV3Interface {
         );
 }
 
-contract SwapTool 
+contract DaiSwapTool 
 {
     IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
     AggregatorV3Interface public constant ethUsdPriceFeed = AggregatorV3Interface(0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612);
@@ -115,5 +115,54 @@ contract SwapTool
         external 
     {
         convertExactEthToDai();
+    }
+}
+
+contract FrySwapTool
+{
+    IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
+    AggregatorV3Interface public constant ethUsdPriceFeed = AggregatorV3Interface(0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612);
+    address private constant FRY = 0x633A3d2091dc7982597A0f635d23Ba5EB1223f48;
+    address private constant WETH9 = 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1;
+
+    function convertExactEthToFry() 
+        public 
+        payable 
+    {
+        require(msg.value > 0, "Must pass non 0 ETH amount");
+
+        uint256 deadline = block.timestamp + 15;
+        address tokenIn = WETH9;
+        address tokenOut = FRY;
+        uint24 fee = 10000;
+        address recipient = msg.sender;
+        uint256 amountIn = msg.value;
+        uint256 amountOutMinimum = 10**18; // won't work for less than 1 FRY
+        uint160 sqrtPriceLimitX96 = 0;  
+
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams(
+            tokenIn,
+            tokenOut,
+            fee,
+            recipient,
+            deadline,
+            amountIn,
+            amountOutMinimum,
+            sqrtPriceLimitX96
+        );
+
+        uniswapRouter.exactInputSingle{ value: msg.value }(params);
+        uniswapRouter.refundETH();
+
+        // refund leftover ETH to user
+        (bool success,) = msg.sender.call{ value: address(this).balance }("");
+        require(success, "refund failed");
+    }
+
+    receive() 
+        payable 
+        external 
+    {
+        convertExactEthToFry();
     }
 }
