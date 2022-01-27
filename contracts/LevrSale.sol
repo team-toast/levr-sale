@@ -11,6 +11,7 @@ contract Sale
     uint constant ONE_HUNDRED_PERC = 10**18;
     uint constant STARTING_POINT = 1000 * 10**18;
     uint constant WAD = 10**18;
+    uint constant MAX_TOKENS_SOLD = 350 * 10**6 * 10**9;
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
     uint public tokensSold;                       
@@ -25,8 +26,8 @@ contract Sale
     address public foundryTreasury;
 
     constructor(
-            uint _inclineWAD,
-            IERC20Mintable _tokenOnSale, 
+            uint _inclineWAD,              
+            IERC20Mintable _tokenOnSale,
             address _gulper, 
             address _treasury, 
             address _foundryTreasury)
@@ -52,11 +53,12 @@ contract Sale
         buy(msg.sender);
     }
 
-    function buy(address _receiver)
+    function buy(address _receiver, address _referrer)
         public
         payable
     {
         uint tokensAssigned = calculateTokensReceived(msg.value);
+        require(tokensSold + tokensAssigned <= MAX_TOKENS_SOLD, "Tokens sold out");
         
         (bool success,) = gulper.call{value:msg.value}("");
         require(success, "gulper malfunction");
@@ -64,23 +66,46 @@ contract Sale
         tokensSold = tokensSold + tokensAssigned;
         raised = raised + msg.value;
 
-        mintTokens(_receiver, tokensAssigned);
+        mintTokens(_receiver, tokensAssigned, _referrer);
+
         emit Bought(_receiver, tokensAssigned);
     }
 
-    function mintTokens(address _receiver, uint _amount)
+    function mintTokens(
+            address _receiver, 
+            uint _amount, 
+            address _referrer)
         private 
     {
-        tokenOnSale.mint(_receiver, _amount);           // 3
+        // distrobution:
+        // 35% buyer
+        // 25% pools
+        // 35% levr dao
+        // 10% foundry (other repaid in FRY burning)
+        // -----
+        // 100% (should be the total up to this point)
+        // 5% referrer (optional)
 
-        // Only 66% of the amount issued to the buyer, this is to make the price slightly higher and compensate for the dEh arbitrage that's going to occur.
-        tokenOnSale.mint(gulper, 2*_amount/3);          // 2
+        uint perc = _amount / 100;
 
-        // give the the levr treasury it's share
-        tokenOnSale.mint(treasury, _amount/3);         // 2
+        tokenOnSale.mint(_receiver, perc * 35);
+
+        // Only 71% of the amount issued to the buyer, 
+        // this is to make the price slightly higher and compensate for the dEh arbitrage that's going to occur.
+        tokenOnSale.mint(gulper, perc * 25);
+
+        // give the the levr treasury its share
+        tokenOnSale.mint(treasury, perc * 35);
 
         // reward the foundry treasury for it's role
-        tokenOnSale.mint(foundryTreasury, _amount/3);  // 1
+        // the other half of the reward is in eth to buy back and burn fry
+        tokenOnSale.mint(foundryTreasury, perc * 5);
+
+        // reward the referrer with 5% of the sold amount
+        if (_referrer != address(0))
+        {
+            tokenOnSale.mint(_referrer, perc * 5);
+        }
     }
 
     function pureCalculateSupply(uint _inclineWAD, uint _raised)
@@ -113,11 +138,8 @@ contract Sale
         pure
         returns(uint _price)
     {
-<<<<<<< HEAD
-        _price = _tokensSold * WAD / _inclineWAD;
-=======
+        // TODO: double check this with Elmer
         _price = (_tokensIssued * WAD * WAD) / _inclineWAD;
->>>>>>> a0170b84b731c0ff42caa8c6d149f6a59a297f1c
     }
 
     function calculatePrice(uint _tokensSold)
