@@ -9,9 +9,9 @@ contract Sale
 {
     uint constant ONE_PERC = 10**16;
     uint constant ONE_HUNDRED_PERC = 10**18;
-    uint constant STARTING_POINT = 1000 * 10**18;
+    uint constant STARTING_POINT = 35 * 10**5 * 10**18;     // 3.5M (1% of total raise)
     uint constant WAD = 10**18;
-    uint constant MAX_TOKENS_SOLD = 350 * 10**6 * 10**9;
+    uint constant MAX_TOKENS_SOLD = 350 * 10**6 * 10**9;    // 350M
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
     uint public tokensSold;                       
