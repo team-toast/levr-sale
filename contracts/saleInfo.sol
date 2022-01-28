@@ -12,7 +12,7 @@ interface ISale
         view
         returns(uint);
 
-    function tokensIssued()
+    function tokensSold()
         external
         view
         returns(uint);
@@ -60,7 +60,7 @@ contract SaleInfo
             uint _pricePaidPerToken)
     {
         _raisedBefore = Sale.raised();
-        _totalTokensSoldBefore = Sale.tokensIssued();
+        _totalTokensSoldBefore = Sale.tokensSold();
         _priceBefore = Sale.calculatePrice(_totalTokensSoldBefore);
 
         _raisedAfter = _raisedBefore + _supplied;
