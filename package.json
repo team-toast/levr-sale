@@ -1,45 +1,47 @@
 {
-  "name": "deth",
-  "version": "2.0.0",
-  "description": "derived ether",
-  "main": "hardhat.config.js",
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.4.0",
-    "csv-writer": "^1.6.0"
-  },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.3",
-    "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@tenderly/hardhat-tenderly": "^1.0.12",
-    "chai": "^4.3.4",
-    "concurrently": "^6.4.0",
-    "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.5.2",
-    "ganache-cli": "^6.12.2",
-    "hardhat": "^2.7.1",
-    "truffle": "^5.3.8",
-    "web3": "^1.5.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/team-toast/deth.git"
-  },
-  "author": "Team Toast",
-  "bugs": {
-    "url": "https://github.com/team-toast/deth/issues"
-  },
-  "homepage": "https://github.com/team-toast/deth#readme",
-  "scripts": {
-    "start": "concurrently \"npx hardhat node --fork https://arb-mainnet.g.alchemy.com/v2/3VktAs9-jOfFCrGAiD-dKd4KzggT13rf --fork-block-number 3843242\"",
-    "npmCD": "\"cd ./smart-contracts/levr-sale/\"",
-    "npmPWD": "\"pwd\"",
-    "test": "concurrently \"npx hardhat test --network localhost\""
-  },
-  "config": {
-    "ganache": {
-      "networkId": 3431,
-      "gasPrice": 25000000000,
-      "gasLimit": 6500000
+    "name": "deth",
+    "version": "2.0.0",
+    "description": "derived ether",
+    "main": "hardhat.config.js",
+    "dependencies": {
+        "@openzeppelin/contracts": "^4.4.0",
+        "csv-writer": "^1.6.0"
+    },
+    "devDependencies": {
+        "@nomiclabs/hardhat-ethers": "^2.0.3",
+        "@nomiclabs/hardhat-truffle5": "^2.0.3",
+        "@nomiclabs/hardhat-waffle": "^2.0.1",
+        "@nomiclabs/hardhat-web3": "^2.0.0",
+        "@tenderly/hardhat-tenderly": "^1.0.13",
+        "chai": "^4.3.4",
+        "concurrently": "^6.4.0",
+        "ethereum-waffle": "^3.4.0",
+        "ethers": "^5.5.2",
+        "ganache-cli": "^6.12.2",
+        "hardhat": "^2.7.1",
+        "truffle": "^5.3.8",
+        "web3": "^1.5.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/team-toast/deth.git"
+    },
+    "author": "Team Toast",
+    "bugs": {
+        "url": "https://github.com/team-toast/deth/issues"
+    },
+    "homepage": "https://github.com/team-toast/deth#readme",
+    "scripts": {
+        "start": "concurrently \"npx hardhat node --fork https://arb-mainnet.g.alchemy.com/v2/3VktAs9-jOfFCrGAiD-dKd4KzggT13rf --fork-block-number 3843242\"",
+        "npmCD": "\"cd ./smart-contracts/levr-sale/\"",
+        "npmPWD": "\"pwd\"",
+        "test": "concurrently \"npx hardhat test --network localhost\""
+    },
+    "config": {
+        "ganache": {
+            "networkId": 3431,
+            "gasPrice": 25000000000,
+            "gasLimit": 6500000
+        }
     }
-  }
 }
