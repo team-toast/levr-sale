@@ -67,20 +67,6 @@ contract Splitter
     function Split() 
         public
     { 
-        // goal:
-        // 1. wrap all the eth
-        // 2. send 47.5% of weth to wethGulper
-        // 3. convert 47.5% of weth to dai
-        // 4. send the dai to daiGulper
-        // 5. send 1/3rd of the LEVR balance to each gulper
-
-
-        // logic:
-        // * wrap all the ether
-        // * manage the send to the wethGulper
-        // * manage the send to the daiGulper
-        // * manage the send to the dEthGulper
-
         uint ethBalance = address(this).balance;
         uint levrBalance = levrErc20.balanceOf(address(this));
         GulpEth(ethBalance*475/1000, levrBalance/3);
