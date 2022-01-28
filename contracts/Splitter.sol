@@ -1,6 +1,18 @@
 pragma solidity ^0.8.0;
 
-import "./SwapTool.sol";
+interface IFrySwapTool
+{
+    function convertExactEthToFry() 
+        external 
+        payable;
+}
+
+interface IDaiSwapTool
+{
+    function convertExactEthToDai() 
+        external 
+        payable;
+}
 
 interface IERC20
 {
@@ -27,8 +39,8 @@ contract Splitter
     address public daiGulper;
     address public dEthGulper;
 
-    DaiSwapTool public daiSwapTool;
-    FrySwapTool public frySwapTool;
+    IDaiSwapTool public daiSwapTool;
+    IFrySwapTool public frySwapTool;
 
     constructor (
         address _levrErc20,
@@ -37,8 +49,8 @@ contract Splitter
         address _ethGulper,
         address _daiGulper,
         address _dEthGulper,
-        DaiSwapTool _daiSwapTool,
-        FrySwapTool _frySwapTool)
+        IDaiSwapTool _daiSwapTool,
+        IFrySwapTool _frySwapTool)
     {
         levrErc20 = IERC20(_levrErc20);
         daiErc20 = IERC20(_daiErc20);
@@ -133,7 +145,7 @@ contract ArbitrumSplitter is Splitter
         address(0x16e2970EcE9c7eB02e46caeE4a9e6eA000a5155E),                 // ethGulper
         address(0xbfAC76BD6AFB65B0F861Dc41B44bF63a6127A4F9),                 // daiGulper
         address(0x4CE79e64236a6dB46E712070D5B9A63483C8786A),                 // dEthGulper
-        DaiSwapTool(payable(0x11C0429D5352D49f81A18aF3B4BB0209c6858033)),    // daiSwapTool
-        FrySwapTool(payable(0x0c789e194DfE4bAC8Acaef344382A754133A5C6f)))    // frySwapTool
+        IDaiSwapTool(payable(0x11C0429D5352D49f81A18aF3B4BB0209c6858033)),    // daiSwapTool
+        IFrySwapTool(payable(0x0c789e194DfE4bAC8Acaef344382A754133A5C6f)))    // frySwapTool
     {}
 }
