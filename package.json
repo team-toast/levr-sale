@@ -4,6 +4,7 @@
     "description": "derived ether",
     "main": "hardhat.config.js",
     "dependencies": {
+        "@balancer-labs/v2-solidity-utils": "^2.0.0",
         "@openzeppelin/contracts": "^4.4.0",
         "csv-writer": "^1.6.0"
     },
