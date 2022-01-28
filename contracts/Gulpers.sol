@@ -59,7 +59,6 @@ contract Gulper
 
     function gulp()
         public
-        payable
     {
         // logic:
         // * wrap all native tokens
@@ -68,8 +67,6 @@ contract Gulper
         // * construct userData bytes to send to vault
         // * construct JoinPoolRequest
         // * join pool, sending BPTs to the void
-
-        IWETH(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270).deposit{ value: address(this).balance }();
 
         (IERC20[] memory tokens, , ) = vault.getPoolTokens(poolId);
 
@@ -109,16 +106,18 @@ contract Gulper
             assets := tokens
         }
     }
-
-    receive()
-        payable
-        external
-    {}
 }
 
 contract EthGulper is Gulper
 {
     constructor () Gulper(bytes32(0x541cc010fd2e06a34db4733f9d763612ea17c450000200000000000000000030)) { }
+
+    receive()
+        payable
+        external
+    {
+        IWETH(0x82aF49447D8a07e3bd95BD0d56f35241523fBab1).deposit{ value: address(this).balance }();
+    }
 }
 
 contract dEthGulper is Gulper
