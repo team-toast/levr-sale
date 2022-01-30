@@ -18,7 +18,7 @@ interface ISale
         returns(uint);
     
     function raised()
-    
+
         external
         view
         returns(uint);
@@ -84,4 +84,10 @@ contract SaleInfo
         Sale.subractFromRaised(_sub);
     }
 
+}
+
+contract ArbitrumSaleInfo is SaleInfo
+{
+    constructor() SaleInfo(ISale(0x272cC4925E544D2878D41bbDc5fF57F2120592b6))
+    { }
 }
