@@ -33,9 +33,9 @@ contract GulpScript
         public
     {
         splitter.Split();
-        ethGulper.Gulp();
-        dEthGulper.Gulp();
-        daiGulper.Gulp();
+        ethGulper.gulp();
+        dEthGulper.gulp();
+        daiGulper.gulp();
     }
 }
 
