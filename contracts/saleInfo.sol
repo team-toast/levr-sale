@@ -18,6 +18,7 @@ interface ISale
         returns(uint);
     
     function raised()
+    
         external
         view
         returns(uint);
