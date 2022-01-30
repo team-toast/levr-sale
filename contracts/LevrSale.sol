@@ -202,8 +202,9 @@ contract ArbitrumLevrSale is Sale
 {
     constructor() Sale(
         1224876200000000000000000000000000000000000000000,              // incline?
-        IERC20Mintable(0x7a416afc042537f290cb44a7c2c269caf0edc93c),     // LEVR erc20
-        0x91abd747e28ad2d28be910c8b8b965cfb1ad92ee,                     // splitter that feeds gulpers
+        IERC20Mintable(0x7A416Afc042537f290CB44A7c2C269Caf0Edc93C),     // LEVR erc20
+        0x91ABD747E28AD2D28bE910C8b8B965cfB1AD92eE,                     // splitter that feeds gulpers
         0x2A0EdcD9C46fAf8689F5dd475c2e4Da4eeb51301,                     // levr.ly treasury
-        0xC38f63Aba640F390F1108A81a441F27398867722);                    // Foundry treasury on Arbitrum
+        0xC38f63Aba640F390F1108A81a441F27398867722)                     // Foundry treasury on Arbitrum
+    { }
 }
