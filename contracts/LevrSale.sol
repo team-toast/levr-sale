@@ -86,7 +86,7 @@ contract Sale
         // 100% (should be the total up to this point)
         // 5% referrer (optional)
 
-        uint perc = _amount / 100;
+        uint perc = _amount / 35;
 
         tokenOnSale.mint(_receiver, perc * 35);
 
