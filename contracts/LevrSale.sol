@@ -81,10 +81,12 @@ contract Sale
         // 35% buyer
         // 25% pools
         // 35% levr dao
-        // 10% foundry (other repaid in FRY burning)
+        // 5% foundry (other 5% repaid in FRY burning)
         // -----
         // 100% (should be the total up to this point)
         // 5% referrer (optional)
+        // -----
+        // 105% maximum.
 
         uint perc = _amount / 35;
 
