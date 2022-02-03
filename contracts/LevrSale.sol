@@ -104,7 +104,7 @@ contract Sale
         // the other half of the reward is in eth to buy back and burn fry
         tokenOnSale.mint(foundryTreasury, perc * 5);
 
-        // reward the referrer with 5% of the sold amount
+        // reward the referrer with 5% on top of the total amount minted here
         if (_referrer != address(0))
         {
             tokenOnSale.mint(_referrer, perc * 5);
