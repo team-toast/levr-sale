@@ -12,12 +12,13 @@ interface ISale
         view
         returns(uint);
 
-    function tokensIssued()
+    function tokensSold()
         external
         view
         returns(uint);
     
     function raised()
+
         external
         view
         returns(uint);
@@ -60,7 +61,7 @@ contract SaleInfo
             uint _pricePaidPerToken)
     {
         _raisedBefore = Sale.raised();
-        _totalTokensSoldBefore = Sale.tokensIssued();
+        _totalTokensSoldBefore = Sale.tokensSold();
         _priceBefore = Sale.calculatePrice(_totalTokensSoldBefore);
 
         _raisedAfter = _raisedBefore + _supplied;
@@ -83,4 +84,10 @@ contract SaleInfo
         Sale.subractFromRaised(_sub);
     }
 
+}
+
+contract ArbitrumSaleInfo is SaleInfo
+{
+    constructor() SaleInfo(ISale(0x272cC4925E544D2878D41bbDc5fF57F2120592b6))
+    { }
 }
