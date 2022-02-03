@@ -141,83 +141,83 @@ describe("LevrSale Tests", function () {
     //     // );
     // });
 
-    it("LS_C: Constructor", async function () {
-        // Calculate initial tokens issued
-        let initialTokensIssued = calculateTokensReceived(
-            initialEthRaised,
-            "0"
-        );
+    // it("LS_C: Constructor", async function () {
+    //     // Calculate initial tokens issued
+    //     let initialTokensIssued = calculateTokensReceived(
+    //         initialEthRaised,
+    //         "0"
+    //     );
 
-        // console.log("Starting Levr: ", initialTokensIssued);
-        expect(await sale.inclineWAD()).to.equal(incline);
-        expect(await sale.tokenOnSale()).to.equal(levr.address);
-        expect(await sale.gulper()).to.equal(gulperAccount.address);
-        expect(await sale.treasury()).to.equal(treasuryAccount.address);
-        expect(await sale.foundryTreasury()).to.equal(foundryAccount.address);
-        expect(await sale.tokensSold()).to.equal(initialTokensIssued);
-    });
+    //     // console.log("Starting Levr: ", initialTokensIssued);
+    //     expect(await sale.inclineWAD()).to.equal(incline);
+    //     expect(await sale.tokenOnSale()).to.equal(levr.address);
+    //     expect(await sale.gulper()).to.equal(gulperAccount.address);
+    //     expect(await sale.treasury()).to.equal(treasuryAccount.address);
+    //     expect(await sale.foundryTreasury()).to.equal(foundryAccount.address);
+    //     expect(await sale.tokensSold()).to.equal(initialTokensIssued);
+    // });
 
-    it("LS_B: Buy zero Levr", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
+    // it("LS_B: Buy zero Levr", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
 
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
 
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
 
-        // Use admin address to make Sale a minter of Levr token
-        await levr.connect(admin).addMinter(sale.address);
+    //     // Use admin address to make Sale a minter of Levr token
+    //     await levr.connect(admin).addMinter(sale.address);
 
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-        let tokensIssuedBefore = await sale.tokensSold();
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+    //     let tokensIssuedBefore = await sale.tokensSold();
 
-        //console.log("Tokens Sold Initial: ", tokensIssuedBefore);
+    //     //console.log("Tokens Sold Initial: ", tokensIssuedBefore);
 
-        // Buy 0 Levr
+    //     // Buy 0 Levr
 
-        let buyTx = await sale.buy(gulperAccount.address, zeroAddress, {
-            value: web3.utils.toWei("0"),
-        });
+    //     let buyTx = await sale.buy(gulperAccount.address, zeroAddress, {
+    //         value: web3.utils.toWei("0"),
+    //     });
 
-        // STATE
-        let totalRaised = await sale.raised();
-        let tokensIssued = await sale.tokensSold();
-        //   console.log("Total Raised: ", totalRaised);
+    //     // STATE
+    //     let totalRaised = await sale.raised();
+    //     let tokensIssued = await sale.tokensSold();
+    //     //   console.log("Total Raised: ", totalRaised);
 
-        let testAccountBalance = await levr.balanceOf(testAccount.address);
-        let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
-        let liquidityAccountBalance = await levr.balanceOf(
-            liquidityAccount.address
-        );
-        let foundryAccountBalance = await levr.balanceOf(
-            foundryAccount.address
-        );
-        let treasuryAccountBalance = await levr.balanceOf(
-            treasuryAccount.address
-        );
+    //     let testAccountBalance = await levr.balanceOf(testAccount.address);
+    //     let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //     let liquidityAccountBalance = await levr.balanceOf(
+    //         liquidityAccount.address
+    //     );
+    //     let foundryAccountBalance = await levr.balanceOf(
+    //         foundryAccount.address
+    //     );
+    //     let treasuryAccountBalance = await levr.balanceOf(
+    //         treasuryAccount.address
+    //     );
 
-        expect(testAccountBalance).to.equal("0");
-        expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
-            web3.utils.toWei("0")
-        );
-        expect(liquidityAccountBalance).to.equal("0");
-        expect(foundryAccountBalance).to.equal("0");
-        expect(treasuryAccountBalance).to.equal("0");
-        expect(tokensIssued).to.equal(tokensIssuedBefore);
-        expect(totalRaised).to.equal(initialEthRaised);
+    //     expect(testAccountBalance).to.equal("0");
+    //     expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
+    //         web3.utils.toWei("0")
+    //     );
+    //     expect(liquidityAccountBalance).to.equal("0");
+    //     expect(foundryAccountBalance).to.equal("0");
+    //     expect(treasuryAccountBalance).to.equal("0");
+    //     expect(tokensIssued).to.equal(tokensIssuedBefore);
+    //     expect(totalRaised).to.equal(initialEthRaised);
 
-        // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(gulperAccount.address, "0");
-    });
+    //     // EVENTS
+    //     expect(buyTx)
+    //         .to.emit(sale, "Bought")
+    //         .withArgs(gulperAccount.address, "0");
+    // });
 
     it("LS_B: Buy Levr", async function () {
         await hre.network.provider.request({
@@ -237,11 +237,17 @@ describe("LevrSale Tests", function () {
         // Use admin address to make Sale contract a minter of Levr token
         await levr.connect(admin).addMinter(sale.address);
 
-        let amountToBuy = "20.0";
+        let amountToBuy = "100.0";
         let raisedBefore = await sale.raised();
-        //console.log("Raised Before: ", raisedBefore);
         let gulperAccountBalanceBefore = await gulperAccount.getBalance();
         let tokensIssuedBefore = await sale.tokensSold();
+
+        let testAccountBalanceBefore = await levr.balanceOf(
+            testAccount.address
+        );
+
+        let tokensReceivedCalculatedWithContract =
+            await sale.calculateTokensReceived(web3.utils.toWei(amountToBuy));
 
         // Buy Levr
         let buyTx = await sale.buy(testAccount.address, zeroAddress, {
@@ -251,9 +257,9 @@ describe("LevrSale Tests", function () {
         // STATE
         let totalRaised = await sale.raised();
         let tokensIssued = await sale.tokensSold();
-        //console.log("Total Issued: ", tokensIssued);
 
         let testAccountBalance = await levr.balanceOf(testAccount.address);
+
         let gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
         let gulperAccountLevrBalance = await levr.balanceOf(
             gulperAccount.address
@@ -268,723 +274,744 @@ describe("LevrSale Tests", function () {
             treasuryAccount.address
         );
 
-        // console.log(
-        //   "Account 0 Tokens: ",
-        //   web3.utils.fromWei(gulperAccountBalance.toString())
-        // );
-
         // Calculate expected tokens received
-        let calculatedTokenAmount = calculateTokensReceived(
+        let calculatedTokenAmountWithJS = calculateTokensReceived(
             web3.utils.toWei(amountToBuy),
             raisedBefore
         );
-        // console.log(
-        //   "Calculated tokens: ",
-        //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
-        // );
+
+        // Expected token amount calculated with JS function
+        console.log("User Balance: ", testAccountBalance);
+        console.log("JS calculated: ", calculatedTokenAmountWithJS);
+        console.log(
+            "Contract tokens return: ",
+            tokensReceivedCalculatedWithContract
+        );
+
+        expect(testAccountBalance).to.equal(calculatedTokenAmountWithJS);
+        // Expected token amount from contract calculatedTokensReturned function
         expect(testAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
+            tokensReceivedCalculatedWithContract
         );
         expect(
             gulperAccountEthBalance.sub(gulperAccountBalanceBefore)
         ).to.equal(web3.utils.toWei(amountToBuy));
+
+        // Gulper balance
+        let calculatedGulperTokens = calculatedTokenAmountWithJS
+            .div(35)
+            .mul(25);
+
         expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(25).toString()
+            calculatedGulperTokens.toString()
         );
-        expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(5).toString()
-        );
-        expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
-        );
-        expect(tokensIssued).to.equal(
-            calculatedTokenAmount.add(tokensIssuedBefore).toString()
-        );
-        expect(totalRaised).to.equal(
-            raisedBefore.add(web3.utils.toWei(amountToBuy))
-        );
+
+        console.log("calculatedGulperTokens: ", calculatedGulperTokens);
+        console.log("Gulper Balance: ", gulperAccountLevrBalance);
+        expect(gulperAccountLevrBalance).to.satisfy(function (
+            calculatedGulperTokens
+        ) {
+            return (
+                calculatedGulperTokens === gulperAccountLevrBalance //||
+                //calculatedGulperTokens == gulperAccountLevrBalance.add(1) || // Cater for rounding errors. Allow to be off by 1 wei.
+                //calculatedGulperTokens == gulperAccountLevrBalance.sub(1)
+            );
+        });
+
+        // expect(foundryAccountBalance).to.equal(
+        //     calculatedTokenAmount.div(100).mul(5).toString()
+        // );
+        // expect(treasuryAccountBalance).to.equal(
+        //     calculatedTokenAmount.div(100).mul(35).toString()
+        // );
+        // expect(tokensIssued).to.equal(
+        //     calculatedTokenAmount.add(tokensIssuedBefore).toString()
+        // );
+        // expect(totalRaised).to.equal(
+        //     raisedBefore.add(web3.utils.toWei(amountToBuy))
+        // );
 
         // // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(testAccount.address, calculatedTokenAmount.toString());
+        // expect(buyTx)
+        //     .to.emit(sale, "Bought")
+        //     .withArgs(testAccount.address, calculatedTokenAmount.toString());
     });
 
-    it("LS_B: Buy Levr with referrer", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
-
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-
-        // Use admin address to make Sale contract a minter of Levr token
-        await levr.connect(admin).addMinter(sale.address);
-
-        let amountToBuy = "20.0";
-        let raisedBefore = await sale.raised();
-        //console.log("Raised Before: ", raisedBefore);
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-        let tokensIssuedBefore = await sale.tokensSold();
-
-        // Buy Levr
-        let buyTx = await sale.buy(testAccount.address, referrer.address, {
-            value: web3.utils.toWei(amountToBuy),
-        });
-
-        // STATE
-        let totalRaised = await sale.raised();
-        let tokensIssued = await sale.tokensSold();
-        //console.log("Total Issued: ", tokensIssued);
-
-        let testAccountBalance = await levr.balanceOf(testAccount.address);
-        let referrerBalance = await levr.balanceOf(referrer.address);
-        let gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
-        let gulperAccountLevrBalance = await levr.balanceOf(
-            gulperAccount.address
-        );
-        let liquidityAccountBalance = await levr.balanceOf(
-            liquidityAccount.address
-        );
-        let foundryAccountBalance = await levr.balanceOf(
-            foundryAccount.address
-        );
-        let treasuryAccountBalance = await levr.balanceOf(
-            treasuryAccount.address
-        );
-
-        // console.log(
-        //   "Account 0 Tokens: ",
-        //   web3.utils.fromWei(gulperAccountBalance.toString())
-        // );
-
-        // Calculate expected tokens received
-        let calculatedTokenAmount = calculateTokensReceived(
-            web3.utils.toWei(amountToBuy),
-            raisedBefore
-        );
-        // console.log(
-        //   "Calculated tokens: ",
-        //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
-        // );
-        expect(testAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
-        );
-        expect(referrerBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(5).toString()
-        );
-        expect(
-            gulperAccountEthBalance.sub(gulperAccountBalanceBefore)
-        ).to.equal(web3.utils.toWei(amountToBuy));
-        expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(25).toString()
-        );
-        expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(5).toString()
-        );
-        expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
-        );
-        expect(tokensIssued).to.equal(
-            calculatedTokenAmount.add(tokensIssuedBefore).toString()
-        );
-        expect(totalRaised).to.equal(
-            raisedBefore.add(web3.utils.toWei(amountToBuy))
-        );
-
-        // // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(testAccount.address, calculatedTokenAmount.toString());
-    });
-
-    it("LS_B: Buy Levr with invalid gulper", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        // Deply invalid gulper
-        let BlankContract = await hre.ethers.getContractFactory(
-            "BlankContract"
-        );
-        let blankContract = await BlankContract.deploy();
-        // Deploy Sale
-        let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
-        let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
-            incline,
-            levr.address,
-            blankContract.address, // gulper
-            treasuryAccount.address, // treasury
-            foundryAccount.address // foundryTreasury
-        );
-
-        await saleWithInvalidGulper.deployed();
-
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
-
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-
-        // Use admin address to make Sale contract a minter of Levr token
-        await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
-
-        let amountToBuy = "1.0";
-        let raisedBefore = await saleWithInvalidGulper.raised();
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-
-        // Should Revert
-        await expect(
-            saleWithInvalidGulper.buy(testAccount.address, zeroAddress, {
-                value: web3.utils.toWei(amountToBuy),
-            })
-        ).to.be.revertedWith(
-            "reverted with reason string 'gulper malfunction'"
-        );
-    });
-
-    it("LS_B: Buy zero Levr (By just sending eth)", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
-
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-
-        // Use admin address to make Sale a minter of Levr token
-        await levr.connect(admin).addMinter(sale.address);
-
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-        let tokensIssuedBefore = await sale.tokensSold();
-        // Buy 0 Levr
-        let buyTx = await testAccount.sendTransaction({
-            to: sale.address,
-            value: ethers.utils.parseEther("0"),
-        });
-
-        // STATE
-        let totalRaised = await sale.raised();
-        let tokensIssued = await sale.tokensSold();
-        //   console.log("Total Raised: ", totalRaised);
-
-        let testAccountBalance = await levr.balanceOf(testAccount.address);
-        let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
-        let liquidityAccountBalance = await levr.balanceOf(
-            liquidityAccount.address
-        );
-        let foundryAccountBalance = await levr.balanceOf(
-            foundryAccount.address
-        );
-        let treasuryAccountBalance = await levr.balanceOf(
-            treasuryAccount.address
-        );
-
-        expect(testAccountBalance).to.equal("0");
-        expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
-            web3.utils.toWei("0")
-        );
-        expect(liquidityAccountBalance).to.equal("0");
-        expect(foundryAccountBalance).to.equal("0");
-        expect(treasuryAccountBalance).to.equal("0");
-        expect(tokensIssued).to.equal(tokensIssuedBefore);
-        expect(totalRaised).to.equal(totalRaised);
-
-        // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(testAccount.address, "0");
-    });
-
-    it("LS_B: Buy Levr (By just sending eth)", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
-
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-
-        // Use admin address to make Sale contract a minter of Levr token
-        await levr.connect(admin).addMinter(sale.address);
-
-        let amountToBuy = "1";
-        let raisedBefore = await sale.raised();
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-        let tokensIssuedBefore = await sale.tokensSold();
-        // Buy 1 eth of Levr by simply sending eth to the contract
-        let buyTx = await testAccount.sendTransaction({
-            to: sale.address,
-            value: ethers.utils.parseEther(amountToBuy),
-        });
-
-        // STATE
-        let totalRaised = await sale.raised();
-        let tokensIssued = await sale.tokensSold();
-        // console.log("Total Raised: ", totalRaised);
-
-        let testAccountBalance = await levr.balanceOf(testAccount.address);
-        let gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
-        let gulperAccountLevrBalance = await levr.balanceOf(
-            gulperAccount.address
-        );
-        let liquidityAccountBalance = await levr.balanceOf(
-            liquidityAccount.address
-        );
-        let foundryAccountBalance = await levr.balanceOf(
-            foundryAccount.address
-        );
-        let treasuryAccountBalance = await levr.balanceOf(
-            treasuryAccount.address
-        );
-
-        // console.log(
-        //   "Account 0 Tokens: ",
-        //   web3.utils.fromWei(gulperAccountBalance.toString())
-        // );
-
-        // Calculate expected tokens received
-        let calculatedTokenAmount = calculateTokensReceived(
-            web3.utils.toWei(amountToBuy),
-            raisedBefore
-        );
-        // console.log(
-        //   "Calculated tokens: ",
-        //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
-        // );
-        expect(testAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
-        );
-        expect(
-            gulperAccountEthBalance.sub(gulperAccountBalanceBefore)
-        ).to.equal(web3.utils.toWei(amountToBuy));
-        expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(25).toString()
-        );
-        expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(5).toString()
-        );
-        expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmount.div(100).mul(35).toString()
-        );
-        expect(tokensIssued).to.equal(
-            calculatedTokenAmount.add(tokensIssuedBefore).toString()
-        );
-        expect(totalRaised).to.equal(
-            raisedBefore.add(web3.utils.toWei(amountToBuy))
-        );
-
-        // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(testAccount.address, calculatedTokenAmount.toString());
-    });
-
-    it("LS_B: Buy Levr with invalid gulper (by just sending eth)", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        // Deploy invalid gulper
-        let BlankContract = await hre.ethers.getContractFactory(
-            "BlankContract"
-        );
-        let blankContract = await BlankContract.deploy();
-        // Deploy Sale
-        let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
-        let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
-            incline,
-            levr.address,
-            blankContract.address, // gulper
-            treasuryAccount.address, // treasury
-            foundryAccount.address // foundryTreasury
-        );
-
-        await saleWithInvalidGulper.deployed();
-
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
-
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-
-        // Use admin address to make Sale contract a minter of Levr token
-        await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
-
-        let amountToBuy = "1.0";
-        let raisedBefore = await saleWithInvalidGulper.raised();
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-
-        // Should Revert
-        await expect(
-            testAccount.sendTransaction({
-                to: saleWithInvalidGulper.address,
-                value: ethers.utils.parseEther(amountToBuy),
-            })
-        ).to.be.revertedWith(
-            "reverted with reason string 'gulper malfunction'"
-        );
-    });
-
-    it("LS_CPPT: Calculate Price; Supplied 0 eth", async function () {
-        let amountEth = "0";
-
-        // Should Revert
-        await expect(
-            sale.calculatePricePerToken(web3.utils.toWei(amountEth))
-        ).to.be.revertedWith(
-            "reverted with panic code 0x12 (Division or modulo division by zero)"
-        );
-    });
-
-    it("LS_CPPT: Calculate Price; Supplied 2 eth", async function () {
-        let raisedBefore = await sale.raised();
-
-        let amountEth = "2";
-
-        let price = await sale.calculatePricePerToken(
-            web3.utils.toWei(amountEth)
-        );
-
-        let calculatedPrice = web3.utils.fromWei(
-            calculatePrice(
-                web3.utils.toWei(amountEth),
-                raisedBefore.toString()
-            ).toString()
-        );
-
-        // console.log("Token Price: ", web3.utils.fromWei(price.toString()));
-        // console.log("Calculated token Price: ", calculatedPrice);
-
-        // RETURNS
-        expect(web3.utils.fromWei(price.toString())).to.equal(calculatedPrice);
-    });
-
-    it("LS_CTR: Supplied 0 eth", async function () {
-        let amountToBuy = "0";
-        let raisedBefore = await sale.raised();
-
-        let tokenAmount = await sale.calculateTokensReceived(
-            web3.utils.toWei(amountToBuy)
-        );
-
-        // console.log(
-        //   "Account 0 Tokens: ",
-        //   web3.utils.fromWei(gulperAccountBalance.toString())
-        // );
-
-        // Calculate expected tokens received
-        let calculatedTokenAmount = calculateTokensReceived(
-            web3.utils.toWei(amountToBuy),
-            raisedBefore
-        );
-        // console.log(
-        //   "Calculated tokens: ",
-        //   web3.utils.fromWei(calculatedTokenAmount.toString())
-        // );
-
-        expect(tokenAmount).to.equal(calculatedTokenAmount.toString());
-    });
-
-    it("LS_CTR: Supplied 1 eth", async function () {
-        let amountToBuy = "1";
-        let raisedBefore = await sale.raised();
-        // Calculate tokens received for 1 eth of Levr
-        let tokenAmount = await sale.calculateTokensReceived(
-            web3.utils.toWei(amountToBuy)
-        );
-
-        // console.log("amountToBuy: ", web3.utils.toWei(amountToBuy));
-
-        let gulperAccountBalance = await levr.balanceOf(gulperAccount.address);
-        // console.log("Tokens: ", web3.utils.fromWei(tokenAmount.toString()));
-
-        // Calculate expected tokens received
-        let calculatedTokenAmount = calculateTokensReceived(
-            web3.utils.toWei(amountToBuy).toString(),
-            raisedBefore.toString()
-        );
-        // console.log("Calculated tokens: ", calculatedTokenAmount.toString());
-
-        expect(tokenAmount.toString()).to.equal(
-            calculatedTokenAmount.toString()
-        );
-    });
-
-    //return; // Don't run graph data generation
-
-    it("Multiple buy Test", async function () {
-        //let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
-        //let incline = "305249378105604451351096324563797880934725117350"; // 1% Start
-        //let incline = "465831239517769992455746636833534334196354427279"; // 10% Start
-
-        // Wolfram equation to get incline value
-        // Divide[\(40)2 \(40)2*Power[10,21]\(41) Power[\(40)1*Power[10,26]\(41),2] + \(40)2*Power[10,22]\(41) Power[1*Power[10,26],2] + 2 sqrt\(40)Power[\(40)2*Power[10,21]\(41),2] Power[\(40)\(40)1*Power[10,26]\(41),4] + \(40)2*Power[10,21]\(41) \(40)2*Power[10,22]\(41) Power[1*Power[10,26],4]\(41)\(41),\(40)2 Power[\(40)2*Power[10,22]\(41),2]\(41)]
-
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        const admin = await ethers.getSigner(accountToImpersonate);
-        // console.log("Admin: ", admin);
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-        // send enough ether to testAccount to do all the buys
-        await gulperAccount.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await liquidityAccount.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra1.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra2.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra3.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-
-        // console.log("Admin Balance: ", adminBal);
-        // admin.sendTransaction(await levr.addMinter(sale.address));
-        await levr.connect(admin).addMinter(sale.address);
-
-        // console.log("Price per token New Method: ", await sale.getCurrentPrice());
-
-        // console.log("isMinter: ", await levr.isMinter(admin.address));
-
-        let tokensIssued = 0;
-        let totalRaised = 0;
-        let amountRaised = 0;
-        let testAccountBalance = 0;
-        let gulperAccountBalance = 0;
-        let liquidityAccountBalance = 0;
-        let foundryAccountBalance = 0;
-        let treasuryAccountBalance = 0;
-        let testAccountCalculatedBalance = BigNumber.from(0);
-        let liquidityAccountCalculatedBalance = BigNumber.from(0);
-        let foundryAccountCalculatedBalance = BigNumber.from(0);
-        let treasuryAccountCalculatedBalance = BigNumber.from(0);
-
-        let issueRecords = [];
-
-        let numberOfBuys = 100;
-        let etherToSpend = "500.0";
-
-        // amountRaised = await sale.raised();
-        // tokensIssued = await sale.tokensSold();
-        // issueRecords.push([
-        //     0,
-        //     web3.utils.fromWei(amountRaised.toString().replace(",", "")),
-        //     web3.utils.fromWei(tokensIssued.toString().replace(",", "")),
-        // ]);
-
-        console.log(
-            "Eth paid for 3.5M tokens: ",
-            calculateEthPaid(web3.utils.toWei("3500000").toString())
-        );
-        console.log(
-            "Tokens for eth: ",
-            calculateTokensReceived(
-                web3.utils.toWei("5.0500011955104871").toString(),
-                "0"
-            )
-        );
-
-        //return;
-
-        for (let i = 0; i < numberOfBuys; i++) {
-            amountRaised = await sale.raised();
-            // console.log("Amount raised: ", amountRaised.toString());
-            let gulperAccountEthBalanceBefore =
-                await gulperAccount.getBalance();
-            let buyTx = await sale.buy(testAccount.address, zeroAddress, {
-                value: web3.utils.toWei(etherToSpend),
-            });
-
-            tokensIssued = await sale.tokensSold();
-            // console.log(
-            //   "Tokens Issued: ",
-            //   web3.utils.fromWei(tokensIssued.toString())
-            // );
-
-            // Check account balances
-
-            testAccountBalance = await levr.balanceOf(testAccount.address);
-            gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
-            let gulperAccountLevrBalance = await levr.balanceOf(
-                gulperAccount.address
-            );
-            foundryAccountBalance = await levr.balanceOf(
-                foundryAccount.address
-            );
-            treasuryAccountBalance = await levr.balanceOf(
-                treasuryAccount.address
-            );
-
-            let tmpCalculated = calculateTokensReceived(
-                web3.utils.toWei(etherToSpend),
-                amountRaised
-            );
-
-            // console.log("Round: ", i);
-            testAccountCalculatedBalance = testAccountCalculatedBalance.add(
-                tmpCalculated.div(100).mul(35)
-            );
-            foundryAccountCalculatedBalance =
-                foundryAccountCalculatedBalance.add(
-                    tmpCalculated.div(100).mul(5)
-                );
-            treasuryAccountCalculatedBalance =
-                treasuryAccountCalculatedBalance.add(
-                    tmpCalculated.div(100).mul(35)
-                );
-
-            expect(testAccountBalance).to.equal(
-                testAccountCalculatedBalance.toString()
-            );
-            expect(
-                gulperAccountEthBalance.sub(gulperAccountEthBalanceBefore)
-            ).to.equal(web3.utils.toWei(etherToSpend));
-            expect(foundryAccountBalance).to.equal(
-                foundryAccountCalculatedBalance.toString()
-            );
-            expect(treasuryAccountBalance).to.equal(
-                treasuryAccountCalculatedBalance.toString()
-            );
-
-            // EVENTS
-            expect(buyTx)
-                .to.emit(sale, "Bought")
-                .withArgs(testAccount.address, tmpCalculated.toString());
-
-            totalRaised = await sale.raised();
-            // console.log("Total Raised: ", web3.utils.fromWei(totalRaised.toString()));
-
-            // console.log("Price per token: ", await sale.calculatePricePerToken("1"));
-            // console.log("Price per token New Method: ", await sale.getCurrentPrice());
-
-            issueRecords.push([
-                i + 1,
-                web3.utils.fromWei(totalRaised.toString().replace(",", "")),
-                web3.utils.fromWei(tokensIssued.toString().replace(",", "")),
-            ]);
-        }
-
-        const csvWriter = createCsvWriter({
-            header: ["Buy Count", "Raised", "Total Tokens Issued"],
-            path: "levrData.csv",
-            fieldDelimiter: ";",
-        });
-
-        csvWriter.writeRecords(issueRecords).then(() => {
-            console.log("Written to csv");
-        });
-
-        console.log(
-            "Total Sold: ",
-            web3.utils.fromWei((await sale.tokensSold()).toString())
-        );
-    });
-
-    it("Hit sold out limit", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
-
-        const admin = await ethers.getSigner(accountToImpersonate);
-        // console.log("Admin: ", admin);
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
-        // send enough ether to testAccount to do all the buys
-        await gulperAccount.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await liquidityAccount.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra1.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra2.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-        await extra3.sendTransaction({
-            to: testAccount.address,
-            value: ethers.utils.parseEther("9999.0"),
-        });
-
-        await levr.connect(admin).addMinter(sale.address);
-
-        let tokensIssued = 0;
-        let amountRaised = 0;
-        let testAccountBalance = 0;
-        let foundryAccountBalance = 0;
-        let treasuryAccountBalance = 0;
-
-        let numberOfBuys = 10;
-        let etherToSpend = "5000.0";
-
-        for (let i = 0; i < numberOfBuys; i++) {
-            amountRaised = await sale.raised();
-            // console.log("Amount raised: ", amountRaised.toString());
-            let gulperAccountEthBalanceBefore =
-                await gulperAccount.getBalance();
-            let buyTx = await sale.buy(testAccount.address, zeroAddress, {
-                value: web3.utils.toWei(etherToSpend),
-            });
-        }
-
-        // Should Revert
-        await expect(
-            sale.buy(testAccount.address, zeroAddress, {
-                value: web3.utils.toWei(etherToSpend),
-            })
-        ).to.be.revertedWith("reverted with reason string 'Tokens sold out'");
-    });
+    // it("LS_B: Buy Levr with referrer", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+
+    //     // Use admin address to make Sale contract a minter of Levr token
+    //     await levr.connect(admin).addMinter(sale.address);
+
+    //     let amountToBuy = "20.0";
+    //     let raisedBefore = await sale.raised();
+    //     //console.log("Raised Before: ", raisedBefore);
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+    //     let tokensIssuedBefore = await sale.tokensSold();
+
+    //     // Buy Levr
+    //     let buyTx = await sale.buy(testAccount.address, referrer.address, {
+    //         value: web3.utils.toWei(amountToBuy),
+    //     });
+
+    //     // STATE
+    //     let totalRaised = await sale.raised();
+    //     let tokensIssued = await sale.tokensSold();
+    //     //console.log("Total Issued: ", tokensIssued);
+
+    //     let testAccountBalance = await levr.balanceOf(testAccount.address);
+    //     let referrerBalance = await levr.balanceOf(referrer.address);
+    //     let gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //     let gulperAccountLevrBalance = await levr.balanceOf(
+    //         gulperAccount.address
+    //     );
+    //     let liquidityAccountBalance = await levr.balanceOf(
+    //         liquidityAccount.address
+    //     );
+    //     let foundryAccountBalance = await levr.balanceOf(
+    //         foundryAccount.address
+    //     );
+    //     let treasuryAccountBalance = await levr.balanceOf(
+    //         treasuryAccount.address
+    //     );
+
+    //     // console.log(
+    //     //   "Account 0 Tokens: ",
+    //     //   web3.utils.fromWei(gulperAccountBalance.toString())
+    //     // );
+
+    //     // Calculate expected tokens received
+    //     let calculatedTokenAmount = calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy),
+    //         raisedBefore
+    //     );
+    //     // console.log(
+    //     //   "Calculated tokens: ",
+    //     //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
+    //     // );
+    //     expect(testAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(35).toString()
+    //     );
+    //     expect(referrerBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(5).toString()
+    //     );
+    //     expect(
+    //         gulperAccountEthBalance.sub(gulperAccountBalanceBefore)
+    //     ).to.equal(web3.utils.toWei(amountToBuy));
+    //     expect(gulperAccountLevrBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(25).toString()
+    //     );
+    //     expect(foundryAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(5).toString()
+    //     );
+    //     expect(treasuryAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(35).toString()
+    //     );
+    //     expect(tokensIssued).to.equal(
+    //         calculatedTokenAmount.add(tokensIssuedBefore).toString()
+    //     );
+    //     expect(totalRaised).to.equal(
+    //         raisedBefore.add(web3.utils.toWei(amountToBuy))
+    //     );
+
+    //     // // EVENTS
+    //     expect(buyTx)
+    //         .to.emit(sale, "Bought")
+    //         .withArgs(testAccount.address, calculatedTokenAmount.toString());
+    // });
+
+    // it("LS_B: Buy Levr with invalid gulper", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     // Deply invalid gulper
+    //     let BlankContract = await hre.ethers.getContractFactory(
+    //         "BlankContract"
+    //     );
+    //     let blankContract = await BlankContract.deploy();
+    //     // Deploy Sale
+    //     let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
+    //     let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
+    //         incline,
+    //         levr.address,
+    //         blankContract.address, // gulper
+    //         treasuryAccount.address, // treasury
+    //         foundryAccount.address // foundryTreasury
+    //     );
+
+    //     await saleWithInvalidGulper.deployed();
+
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+
+    //     // Use admin address to make Sale contract a minter of Levr token
+    //     await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
+
+    //     let amountToBuy = "2.0";
+    //     let raisedBefore = await saleWithInvalidGulper.raised();
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+
+    //     // Should Revert
+    //     await expect(
+    //         saleWithInvalidGulper.buy(testAccount.address, zeroAddress, {
+    //             value: web3.utils.toWei(amountToBuy),
+    //         })
+    //     ).to.be.revertedWith(
+    //         "reverted with reason string 'gulper malfunction'"
+    //     );
+    // });
+
+    // it("LS_B: Buy zero Levr (By just sending eth)", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+
+    //     // Use admin address to make Sale a minter of Levr token
+    //     await levr.connect(admin).addMinter(sale.address);
+
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+    //     let tokensIssuedBefore = await sale.tokensSold();
+    //     // Buy 0 Levr
+    //     let buyTx = await testAccount.sendTransaction({
+    //         to: sale.address,
+    //         value: ethers.utils.parseEther("0"),
+    //     });
+
+    //     // STATE
+    //     let totalRaised = await sale.raised();
+    //     let tokensIssued = await sale.tokensSold();
+    //     //   console.log("Total Raised: ", totalRaised);
+
+    //     let testAccountBalance = await levr.balanceOf(testAccount.address);
+    //     let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //     let liquidityAccountBalance = await levr.balanceOf(
+    //         liquidityAccount.address
+    //     );
+    //     let foundryAccountBalance = await levr.balanceOf(
+    //         foundryAccount.address
+    //     );
+    //     let treasuryAccountBalance = await levr.balanceOf(
+    //         treasuryAccount.address
+    //     );
+
+    //     expect(testAccountBalance).to.equal("0");
+    //     expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
+    //         web3.utils.toWei("0")
+    //     );
+    //     expect(liquidityAccountBalance).to.equal("0");
+    //     expect(foundryAccountBalance).to.equal("0");
+    //     expect(treasuryAccountBalance).to.equal("0");
+    //     expect(tokensIssued).to.equal(tokensIssuedBefore);
+    //     expect(totalRaised).to.equal(totalRaised);
+
+    //     // EVENTS
+    //     expect(buyTx)
+    //         .to.emit(sale, "Bought")
+    //         .withArgs(testAccount.address, "0");
+    // });
+
+    // it("LS_B: Buy Levr (By just sending eth)", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+
+    //     // Use admin address to make Sale contract a minter of Levr token
+    //     await levr.connect(admin).addMinter(sale.address);
+
+    //     let amountToBuy = "1";
+    //     let raisedBefore = await sale.raised();
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+    //     let tokensIssuedBefore = await sale.tokensSold();
+    //     // Buy 1 eth of Levr by simply sending eth to the contract
+    //     let buyTx = await testAccount.sendTransaction({
+    //         to: sale.address,
+    //         value: ethers.utils.parseEther(amountToBuy),
+    //     });
+
+    //     // STATE
+    //     let totalRaised = await sale.raised();
+    //     let tokensIssued = await sale.tokensSold();
+    //     // console.log("Total Raised: ", totalRaised);
+
+    //     let testAccountBalance = await levr.balanceOf(testAccount.address);
+    //     let gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //     let gulperAccountLevrBalance = await levr.balanceOf(
+    //         gulperAccount.address
+    //     );
+    //     let liquidityAccountBalance = await levr.balanceOf(
+    //         liquidityAccount.address
+    //     );
+    //     let foundryAccountBalance = await levr.balanceOf(
+    //         foundryAccount.address
+    //     );
+    //     let treasuryAccountBalance = await levr.balanceOf(
+    //         treasuryAccount.address
+    //     );
+
+    //     // console.log(
+    //     //   "Account 0 Tokens: ",
+    //     //   web3.utils.fromWei(gulperAccountBalance.toString())
+    //     // );
+
+    //     // Calculate expected tokens received
+    //     let calculatedTokenAmount = calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy),
+    //         raisedBefore
+    //     );
+    //     // console.log(
+    //     //   "Calculated tokens: ",
+    //     //   web3.utils.fromWei(calculatedTokenAmount.div(7).mul(4).toString())
+    //     // );
+    //     expect(testAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(35).toString()
+    //     );
+    //     expect(
+    //         gulperAccountEthBalance.sub(gulperAccountBalanceBefore)
+    //     ).to.equal(web3.utils.toWei(amountToBuy));
+    //     expect(gulperAccountLevrBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(25).toString()
+    //     );
+    //     expect(foundryAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(5).toString()
+    //     );
+    //     expect(treasuryAccountBalance).to.equal(
+    //         calculatedTokenAmount.div(100).mul(35).toString()
+    //     );
+    //     expect(tokensIssued).to.equal(
+    //         calculatedTokenAmount.add(tokensIssuedBefore).toString()
+    //     );
+    //     expect(totalRaised).to.equal(
+    //         raisedBefore.add(web3.utils.toWei(amountToBuy))
+    //     );
+
+    //     // EVENTS
+    //     expect(buyTx)
+    //         .to.emit(sale, "Bought")
+    //         .withArgs(testAccount.address, calculatedTokenAmount.toString());
+    // });
+
+    // it("LS_B: Buy Levr with invalid gulper (by just sending eth)", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     // Deploy invalid gulper
+    //     let BlankContract = await hre.ethers.getContractFactory(
+    //         "BlankContract"
+    //     );
+    //     let blankContract = await BlankContract.deploy();
+    //     // Deploy Sale
+    //     let SaleWithInvalidGulper = await hre.ethers.getContractFactory("Sale");
+    //     let saleWithInvalidGulper = await SaleWithInvalidGulper.deploy(
+    //         incline,
+    //         levr.address,
+    //         blankContract.address, // gulper
+    //         treasuryAccount.address, // treasury
+    //         foundryAccount.address // foundryTreasury
+    //     );
+
+    //     await saleWithInvalidGulper.deployed();
+
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+
+    //     // Use admin address to make Sale contract a minter of Levr token
+    //     await levr.connect(admin).addMinter(saleWithInvalidGulper.address);
+
+    //     let amountToBuy = "1.0";
+    //     let raisedBefore = await saleWithInvalidGulper.raised();
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+
+    //     // Should Revert
+    //     await expect(
+    //         testAccount.sendTransaction({
+    //             to: saleWithInvalidGulper.address,
+    //             value: ethers.utils.parseEther(amountToBuy),
+    //         })
+    //     ).to.be.revertedWith(
+    //         "reverted with reason string 'gulper malfunction'"
+    //     );
+    // });
+
+    // it("LS_CPPT: Calculate Price; Supplied 0 eth", async function () {
+    //     let amountEth = "0";
+
+    //     // Should Revert
+    //     await expect(
+    //         sale.calculatePricePerToken(web3.utils.toWei(amountEth))
+    //     ).to.be.revertedWith(
+    //         "reverted with panic code 0x12 (Division or modulo division by zero)"
+    //     );
+    // });
+
+    // it("LS_CPPT: Calculate Price; Supplied 2 eth", async function () {
+    //     let raisedBefore = await sale.raised();
+
+    //     let amountEth = "2";
+
+    //     let price = await sale.calculatePricePerToken(
+    //         web3.utils.toWei(amountEth)
+    //     );
+
+    //     let calculatedPrice = web3.utils.fromWei(
+    //         calculatePrice(
+    //             web3.utils.toWei(amountEth),
+    //             raisedBefore.toString()
+    //         ).toString()
+    //     );
+
+    //     // console.log("Token Price: ", web3.utils.fromWei(price.toString()));
+    //     // console.log("Calculated token Price: ", calculatedPrice);
+
+    //     // RETURNS
+    //     expect(web3.utils.fromWei(price.toString())).to.equal(calculatedPrice);
+    // });
+
+    // it("LS_CTR: Supplied 0 eth", async function () {
+    //     let amountToBuy = "0";
+    //     let raisedBefore = await sale.raised();
+
+    //     let tokenAmount = await sale.calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy)
+    //     );
+
+    //     // console.log(
+    //     //   "Account 0 Tokens: ",
+    //     //   web3.utils.fromWei(gulperAccountBalance.toString())
+    //     // );
+
+    //     // Calculate expected tokens received
+    //     let calculatedTokenAmount = calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy),
+    //         raisedBefore
+    //     );
+    //     // console.log(
+    //     //   "Calculated tokens: ",
+    //     //   web3.utils.fromWei(calculatedTokenAmount.toString())
+    //     // );
+
+    //     expect(tokenAmount).to.equal(calculatedTokenAmount.toString());
+    // });
+
+    // it("LS_CTR: Supplied 1 eth", async function () {
+    //     let amountToBuy = "1";
+    //     let raisedBefore = await sale.raised();
+    //     // Calculate tokens received for 1 eth of Levr
+    //     let tokenAmount = await sale.calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy)
+    //     );
+
+    //     // console.log("amountToBuy: ", web3.utils.toWei(amountToBuy));
+
+    //     let gulperAccountBalance = await levr.balanceOf(gulperAccount.address);
+    //     // console.log("Tokens: ", web3.utils.fromWei(tokenAmount.toString()));
+
+    //     // Calculate expected tokens received
+    //     let calculatedTokenAmount = calculateTokensReceived(
+    //         web3.utils.toWei(amountToBuy).toString(),
+    //         raisedBefore.toString()
+    //     );
+    //     // console.log("Calculated tokens: ", calculatedTokenAmount.toString());
+
+    //     expect(tokenAmount.toString()).to.equal(
+    //         calculatedTokenAmount.toString()
+    //     );
+    // });
+
+    // //return; // Don't run graph data generation
+
+    // it("Multiple buy Test", async function () {
+    //     //let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
+    //     //let incline = "305249378105604451351096324563797880934725117350"; // 1% Start
+    //     //let incline = "465831239517769992455746636833534334196354427279"; // 10% Start
+
+    //     // Wolfram equation to get incline value
+    //     // Divide[\(40)2 \(40)2*Power[10,21]\(41) Power[\(40)1*Power[10,26]\(41),2] + \(40)2*Power[10,22]\(41) Power[1*Power[10,26],2] + 2 sqrt\(40)Power[\(40)2*Power[10,21]\(41),2] Power[\(40)\(40)1*Power[10,26]\(41),4] + \(40)2*Power[10,21]\(41) \(40)2*Power[10,22]\(41) Power[1*Power[10,26],4]\(41)\(41),\(40)2 Power[\(40)2*Power[10,22]\(41),2]\(41)]
+
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+    //     // console.log("Admin: ", admin);
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+    //     // send enough ether to testAccount to do all the buys
+    //     await gulperAccount.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await liquidityAccount.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra1.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra2.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra3.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+
+    //     // console.log("Admin Balance: ", adminBal);
+    //     // admin.sendTransaction(await levr.addMinter(sale.address));
+    //     await levr.connect(admin).addMinter(sale.address);
+
+    //     // console.log("Price per token New Method: ", await sale.getCurrentPrice());
+
+    //     // console.log("isMinter: ", await levr.isMinter(admin.address));
+
+    //     let tokensIssued = 0;
+    //     let totalRaised = 0;
+    //     let amountRaised = 0;
+    //     let testAccountBalance = 0;
+    //     let gulperAccountBalance = 0;
+    //     let liquidityAccountBalance = 0;
+    //     let foundryAccountBalance = 0;
+    //     let treasuryAccountBalance = 0;
+    //     let testAccountCalculatedBalance = BigNumber.from(0);
+    //     let liquidityAccountCalculatedBalance = BigNumber.from(0);
+    //     let foundryAccountCalculatedBalance = BigNumber.from(0);
+    //     let treasuryAccountCalculatedBalance = BigNumber.from(0);
+
+    //     let issueRecords = [];
+
+    //     let numberOfBuys = 100;
+    //     let etherToSpend = "500.0";
+
+    //     // amountRaised = await sale.raised();
+    //     // tokensIssued = await sale.tokensSold();
+    //     // issueRecords.push([
+    //     //     0,
+    //     //     web3.utils.fromWei(amountRaised.toString().replace(",", "")),
+    //     //     web3.utils.fromWei(tokensIssued.toString().replace(",", "")),
+    //     // ]);
+
+    //     console.log(
+    //         "Eth paid for 3.5M tokens: ",
+    //         calculateEthPaid(web3.utils.toWei("3500000").toString())
+    //     );
+    //     console.log(
+    //         "Tokens for eth: ",
+    //         calculateTokensReceived(
+    //             web3.utils.toWei("5.0500011955104871").toString(),
+    //             "0"
+    //         )
+    //     );
+
+    //     //return;
+
+    //     for (let i = 0; i < numberOfBuys; i++) {
+    //         amountRaised = await sale.raised();
+    //         // console.log("Amount raised: ", amountRaised.toString());
+    //         let gulperAccountEthBalanceBefore =
+    //             await gulperAccount.getBalance();
+    //         let buyTx = await sale.buy(testAccount.address, zeroAddress, {
+    //             value: web3.utils.toWei(etherToSpend),
+    //         });
+
+    //         tokensIssued = await sale.tokensSold();
+    //         // console.log(
+    //         //   "Tokens Issued: ",
+    //         //   web3.utils.fromWei(tokensIssued.toString())
+    //         // );
+
+    //         // Check account balances
+
+    //         testAccountBalance = await levr.balanceOf(testAccount.address);
+    //         gulperAccountEthBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //         let gulperAccountLevrBalance = await levr.balanceOf(
+    //             gulperAccount.address
+    //         );
+    //         foundryAccountBalance = await levr.balanceOf(
+    //             foundryAccount.address
+    //         );
+    //         treasuryAccountBalance = await levr.balanceOf(
+    //             treasuryAccount.address
+    //         );
+
+    //         let tmpCalculated = calculateTokensReceived(
+    //             web3.utils.toWei(etherToSpend),
+    //             amountRaised
+    //         );
+
+    //         // console.log("Round: ", i);
+    //         testAccountCalculatedBalance = testAccountCalculatedBalance.add(
+    //             tmpCalculated.div(100).mul(35)
+    //         );
+    //         foundryAccountCalculatedBalance =
+    //             foundryAccountCalculatedBalance.add(
+    //                 tmpCalculated.div(100).mul(5)
+    //             );
+    //         treasuryAccountCalculatedBalance =
+    //             treasuryAccountCalculatedBalance.add(
+    //                 tmpCalculated.div(100).mul(35)
+    //             );
+
+    //         expect(testAccountBalance).to.equal(
+    //             testAccountCalculatedBalance.toString()
+    //         );
+    //         expect(
+    //             gulperAccountEthBalance.sub(gulperAccountEthBalanceBefore)
+    //         ).to.equal(web3.utils.toWei(etherToSpend));
+    //         expect(foundryAccountBalance).to.equal(
+    //             foundryAccountCalculatedBalance.toString()
+    //         );
+    //         expect(treasuryAccountBalance).to.equal(
+    //             treasuryAccountCalculatedBalance.toString()
+    //         );
+
+    //         // EVENTS
+    //         expect(buyTx)
+    //             .to.emit(sale, "Bought")
+    //             .withArgs(testAccount.address, tmpCalculated.toString());
+
+    //         totalRaised = await sale.raised();
+    //         // console.log("Total Raised: ", web3.utils.fromWei(totalRaised.toString()));
+
+    //         // console.log("Price per token: ", await sale.calculatePricePerToken("1"));
+    //         // console.log("Price per token New Method: ", await sale.getCurrentPrice());
+
+    //         issueRecords.push([
+    //             i + 1,
+    //             web3.utils.fromWei(totalRaised.toString().replace(",", "")),
+    //             web3.utils.fromWei(tokensIssued.toString().replace(",", "")),
+    //         ]);
+    //     }
+
+    //     const csvWriter = createCsvWriter({
+    //         header: ["Buy Count", "Raised", "Total Tokens Issued"],
+    //         path: "levrData.csv",
+    //         fieldDelimiter: ";",
+    //     });
+
+    //     csvWriter.writeRecords(issueRecords).then(() => {
+    //         console.log("Written to csv");
+    //     });
+
+    //     console.log(
+    //         "Total Sold: ",
+    //         web3.utils.fromWei((await sale.tokensSold()).toString())
+    //     );
+    // });
+
+    // it("Hit sold out limit", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
+
+    //     const admin = await ethers.getSigner(accountToImpersonate);
+    //     // console.log("Admin: ", admin);
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
+    //     // send enough ether to testAccount to do all the buys
+    //     await gulperAccount.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await liquidityAccount.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra1.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra2.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+    //     await extra3.sendTransaction({
+    //         to: testAccount.address,
+    //         value: ethers.utils.parseEther("9999.0"),
+    //     });
+
+    //     await levr.connect(admin).addMinter(sale.address);
+
+    //     let tokensIssued = 0;
+    //     let amountRaised = 0;
+    //     let testAccountBalance = 0;
+    //     let foundryAccountBalance = 0;
+    //     let treasuryAccountBalance = 0;
+
+    //     let numberOfBuys = 10;
+    //     let etherToSpend = "5000.0";
+
+    //     for (let i = 0; i < numberOfBuys; i++) {
+    //         amountRaised = await sale.raised();
+    //         // console.log("Amount raised: ", amountRaised.toString());
+    //         let gulperAccountEthBalanceBefore =
+    //             await gulperAccount.getBalance();
+    //         let buyTx = await sale.buy(testAccount.address, zeroAddress, {
+    //             value: web3.utils.toWei(etherToSpend),
+    //         });
+    //     }
+
+    //     // Should Revert
+    //     await expect(
+    //         sale.buy(testAccount.address, zeroAddress, {
+    //             value: web3.utils.toWei(etherToSpend),
+    //         })
+    //     ).to.be.revertedWith("reverted with reason string 'Tokens sold out'");
+    // });
 });
 
 async function resetChain() {
@@ -1021,6 +1048,8 @@ function calculateTokensReceived(ethAmount, raisedBefore) {
     alreadyRaised = sqrt(alreadyRaised);
     tokens = tokens.sub(alreadyRaised);
 
+    tokens = tokens.div(35);
+    tokens = tokens.mul(35);
     // console.log("Tokens (func): ", tokens);
 
     return tokens;
