@@ -125,13 +125,13 @@ contract Splitter
 contract ArbitrumSplitter is Splitter
 {
     constructor() Splitter(
-        address(0x7A416Afc042537f290CB44A7c2C269Caf0Edc93C),                 // levrErc20
-        address(0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1),                 // daiErc20
-        address(0x633A3d2091dc7982597A0f635d23Ba5EB1223f48),                 // fryErc20
-        address(0x16e2970EcE9c7eB02e46caeE4a9e6eA000a5155E),                 // ethGulper
-        address(0xbfAC76BD6AFB65B0F861Dc41B44bF63a6127A4F9),                 // daiGulper
-        address(0x4CE79e64236a6dB46E712070D5B9A63483C8786A),                 // dEthGulper
-        IDaiSwapTool(payable(0x11C0429D5352D49f81A18aF3B4BB0209c6858033)),    // daiSwapTool
-        IFrySwapTool(payable(0x0c789e194DfE4bAC8Acaef344382A754133A5C6f)))    // frySwapTool
+        address(0x77De4df6F2d87Cc7708959bCEa45d58B0E8b8315),                 // levrErc20.
+        address(0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1),                 // daiErc20.
+        address(0x633A3d2091dc7982597A0f635d23Ba5EB1223f48),                 // fryErc20.
+        address(0xbe3a1490153Ae6f497852e75E8d022562CAb71C7),                 // ethGulper.
+        address(0x78c33207e8E1ddd7634062C3b198266756b30Ba4),                 // daiGulper.
+        address(0xf339039197592067f6a5F69cBFF6d8235643942D),                 // dEthGulper.
+        IDaiSwapTool(payable(0x1AD1d774973fD00d6da88cBb2cE944832760fa51)),    // daiSwapTool.
+        IFrySwapTool(payable(0x894e8B2E229Ceb55a3DAB49C15DFb1C10E545F8d)))    // frySwapTool.
     {}
 }

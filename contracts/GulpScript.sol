@@ -29,7 +29,7 @@ contract GulpScript
         daiGulper = _daiGulper;
     }
 
-    function Gulp()
+    function gulp()
         public
     {
         splitter.Split();
@@ -43,9 +43,9 @@ contract ArbitrumGulpScript is GulpScript
 {
     constructor()
     GulpScript (
-        ISplitter(0x91ABD747E28AD2D28bE910C8b8B965cfB1AD92eE), 
-        IGulper(0x16e2970EcE9c7eB02e46caeE4a9e6eA000a5155E), 
-        IGulper(0x4CE79e64236a6dB46E712070D5B9A63483C8786A), 
-        IGulper(0xbfAC76BD6AFB65B0F861Dc41B44bF63a6127A4F9))
+        ISplitter(0x2518a3f571b0a5F3bB390AeF10c876bEBb051293),  // splitter
+        IGulper(0xbe3a1490153Ae6f497852e75E8d022562CAb71C7),    // ethGulper
+        IGulper(0xf339039197592067f6a5F69cBFF6d8235643942D),    // dEthGulper
+        IGulper(0x78c33207e8E1ddd7634062C3b198266756b30Ba4))    // daiGulper
     { }
 }

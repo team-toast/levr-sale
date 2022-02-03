@@ -1,17 +1,17 @@
 # Official levr.ly contracts deployed to Arbitrum One mainnet
 
 * LEVR ERC20 - 0x77De4df6F2d87Cc7708959bCEa45d58B0E8b8315
-* GulpScript - 
+* GulpScript - 0x175cbca82660a3a0a2ea7414103a1967715f88f3
 * SaleInfo - 
 * LevrSale - 
-* levr.ly treasury Forwarder - 
-* Foundry treasury Forwarder - 
-* Splitter - 
-* dEthGulper - 
-* DaiGulper - 
-* EthGulper - 
-* FrySwapTool - 
-* DaiSwapTool - 
+* levr.ly treasury Forwarder - 0x2A0EdcD9C46fAf8689F5dd475c2e4Da4eeb51301
+* Foundry treasury Forwarder - 0xC38f63Aba640F390F1108A81a441F27398867722
+* Splitter - 0x2518a3f571b0a5F3bB390AeF10c876bEBb051293
+* dEthGulper - 0xf339039197592067f6a5F69cBFF6d8235643942D
+* DaiGulper - 0x78c33207e8E1ddd7634062C3b198266756b30Ba4
+* EthGulper - 0xbe3a1490153Ae6f497852e75E8d022562CAb71C7
+* FrySwapTool - 0x894e8B2E229Ceb55a3DAB49C15DFb1C10E545F8d
+* DaiSwapTool - 0x1AD1d774973fD00d6da88cBb2cE944832760fa51
 
 # Balancer Pools
 * lvrlDAI - 0x85a7023f3d287f849b6c8223af1e783383a391a8000200000000000000000044
