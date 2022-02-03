@@ -132,7 +132,9 @@ contract Sale
         view
         returns (uint _tokensReturned)
     {
-        _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);       
+        _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);  
+        _tokensReturned = _tokensReturned / 35; // Added to make tokens received during buy and _tokensRetured here the same including rounding errors
+        _tokensReturned = _tokensReturned * 35;
     }
 
     function pureCalculatePrice(uint _inclineWAD, uint _tokensSold)
