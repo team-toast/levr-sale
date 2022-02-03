@@ -43,6 +43,7 @@ contract Sale
     event Bought
     (
         address _receiver,
+        address _referrer,
         uint _amount
     );
 
@@ -68,7 +69,7 @@ contract Sale
 
         mintTokens(_receiver, tokensAssigned, _referrer);
 
-        emit Bought(_receiver, tokensAssigned);
+        emit Bought(_receiver, _referrer, tokensAssigned);
     }
 
     function mintTokens(
@@ -90,20 +91,20 @@ contract Sale
 
         uint perc = _amount / 35;
 
-        tokenOnSale.mint(_receiver, perc * 35);
+        tokenOnSale.mint(_receiver, _amount); // same as perc * 35, but without the potential rounding error. 
 
         // Only 71% of the amount issued to the buyer, 
         // this is to make the price slightly higher and compensate for the dEh arbitrage that's going to occur.
         tokenOnSale.mint(gulper, perc * 25);
 
         // give the the levr treasury its share
-        tokenOnSale.mint(treasury, perc * 35);
+        tokenOnSale.mint(treasury, _amount);
 
         // reward the foundry treasury for it's role
         // the other half of the reward is in eth to buy back and burn fry
         tokenOnSale.mint(foundryTreasury, perc * 5);
 
-        // reward the referrer with 5% of the sold amount
+        // reward the referrer with 5% on top of the total amount minted here
         if (_referrer != address(0))
         {
             tokenOnSale.mint(_referrer, perc * 5);
@@ -133,8 +134,6 @@ contract Sale
         returns (uint _tokensReturned)
     {
         _tokensReturned = pureCalculateTokensRecieved(inclineWAD, raised, _supplied);  
-        _tokensReturned = _tokensReturned / 35; // Added to make tokens received during buy and _tokensRetured here the same including rounding errors
-        _tokensReturned = _tokensReturned * 35;
     }
 
     function pureCalculatePrice(uint _inclineWAD, uint _tokensSold)
