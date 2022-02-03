@@ -108,9 +108,19 @@ contract Gulper
     }
 }
 
+contract DaiGulper is Gulper
+{
+    constructor () Gulper(bytes32(0x85a7023f3d287f849b6c8223af1e783383a391a8000200000000000000000044)) { }
+}
+
+contract dEthGulper is Gulper
+{
+    constructor () Gulper(bytes32(0x507f8456aa170285fe33b80757feca82b8103e77000200000000000000000045)) { }
+}
+
 contract EthGulper is Gulper
 {
-    constructor () Gulper(bytes32(0x541cc010fd2e06a34db4733f9d763612ea17c450000200000000000000000030)) { }
+    constructor () Gulper(bytes32(0x055242438d0eca5dd98878c32a3033d19f73c935000200000000000000000046)) { }
 
     receive()
         payable
@@ -118,16 +128,6 @@ contract EthGulper is Gulper
     {
         IWETH(0x82aF49447D8a07e3bd95BD0d56f35241523fBab1).deposit{ value: address(this).balance }();
     }
-}
-
-contract dEthGulper is Gulper
-{
-    constructor () Gulper(bytes32(0x838ad2471718845a699d58cdd732599695d5dba5000200000000000000000032)) { }
-}
-
-contract DaiGulper is Gulper
-{
-    constructor () Gulper(bytes32(0xb9ed8d2473ae6534b32f658df490355b484fa24f00020000000000000000002f)) { }
 }
 
 // Deploys the 3 gulpers to Arbitrum
