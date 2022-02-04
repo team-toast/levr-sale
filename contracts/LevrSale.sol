@@ -3,15 +3,14 @@ pragma solidity 0.8.10;
 interface IERC20Mintable 
 {
     function mint(address, uint) external returns (bool);
+    function renounceMinter() external;
 }
 
 contract Sale
 {
-    uint constant ONE_PERC = 10**16;
-    uint constant ONE_HUNDRED_PERC = 10**18;
-    uint constant STARTING_POINT = 5000505357194460000;     // 3.5M (1% of total tokens)
+    uint constant STARTING_POINT = 5 * 10**18; // 5 eth, meaning 4M (1% of total tokens)
     uint constant WAD = 10**18;
-    uint constant MAX_TOKENS_SOLD = 350 * 10**6 * 10**18;    // 350M
+    uint constant MAX_TOKENS_SOLD = 400 * 10**6 * 10**18;    // 400M sold implying a maximum of 1 Billion
 
     uint public raised = STARTING_POINT; //used this to spare one storage slot and simplify later code                      
     uint public tokensSold;                       
@@ -202,13 +201,45 @@ contract Sale
     }
 }
 
-contract ArbitrumLevrSale is Sale
+contract RenounceMinter
 {
-    constructor() Sale(
-        1224876200000000000000000000000000000000000000000,              // incline?
+    address public owner;
+
+    constructor(address _owner)
+    {
+        owner = _owner;
+    }
+
+    modifier onlyOwner()
+    {
+        require(msg.sender == owner, "Only owner");
+        _;
+    }
+
+    function changeOwner(address _newOwner)
+        public
+        onlyOwner
+    {
+        owner = _newOwner;
+    }
+
+    function renounceMinter(IERC20Mintable _token)
+        public
+        onlyOwner
+    {
+        _token.renounceMinter();
+    }
+}
+
+contract ArbitrumLevrSale is Sale, RenounceMinter
+{
+    constructor() 
+    Sale(
+        1600000000000000000000000000000000000000000000000,              // incline
         IERC20Mintable(0x7A416Afc042537f290CB44A7c2C269Caf0Edc93C),     // LEVR erc20
         0x91ABD747E28AD2D28bE910C8b8B965cfB1AD92eE,                     // splitter that feeds gulpers
         0x2A0EdcD9C46fAf8689F5dd475c2e4Da4eeb51301,                     // levr.ly treasury
         0xC38f63Aba640F390F1108A81a441F27398867722)                     // Foundry treasury on Arbitrum
+    RenounceMinter(msg.sender)
     { }
 }
