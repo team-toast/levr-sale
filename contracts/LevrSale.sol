@@ -79,23 +79,23 @@ contract Sale
         private 
     {
         // distrobution:
-        // 30% buyer
-        // 30% pools
-        // 30% levr dao
+        // 40% buyer
+        // 25% pools
+        // 25% levr dao
         // 5% foundry (other 5% repaid in FRY burning)
         // 5% referrer (if specified, else sent to the treasury)
         // -----
         // 100% (should be the total up to this point)
         // -----
 
-        uint perc = _amount / 30;
+        uint perc = _amount / 40;
 
-        tokenOnSale.mint(_receiver, _amount); // same as perc * 35, but without the potential rounding error. 
+        tokenOnSale.mint(_receiver, _amount); // same as perc * 40, but without the potential rounding error. 
 
-        tokenOnSale.mint(gulper, _amount);
+        tokenOnSale.mint(gulper, perc * 25);
 
         // give the the levr treasury its share
-        tokenOnSale.mint(treasury, _amount);
+        tokenOnSale.mint(treasury, perc * 25);
 
         // reward the foundry treasury for it's role
         // the other half of the reward is in eth to buy back and burn fry

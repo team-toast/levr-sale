@@ -14,6 +14,13 @@ interface IDaiSwapTool
         payable;
 }
 
+interface IDEthSwapTool
+{
+    function convertExactEthToDEth() 
+        external 
+        payable;
+}
+
 interface IERC20
 {
     function transfer(address _to, uint256 _value) external;
@@ -34,6 +41,7 @@ contract Splitter
     IERC20 public levrErc20;
     IERC20 public daiErc20;
     IERC20 public fryErc20;
+    IERC20 public dethErc20;
 
     address public ethGulper;
     address public daiGulper;
@@ -41,6 +49,7 @@ contract Splitter
 
     IDaiSwapTool public daiSwapTool;
     IFrySwapTool public frySwapTool;
+    IDEthSwapTool public dEthSwapTool;
 
     constructor (
         address _levrErc20,
@@ -69,9 +78,10 @@ contract Splitter
     { 
         uint ethBalance = address(this).balance;
         uint levrBalance = levrErc20.balanceOf(address(this));
-        GulpEth(ethBalance*475/1000, levrBalance/3);
-        GulpDai(ethBalance*475/1000, levrBalance/3);
-        GulpDeth(levrBalance/3);
+        uint ethGulperAmount = (ethBalance*950/1000)/3; // one 3rd of 95% 
+        GulpEth(ethGulperAmount, levrBalance/3);
+        GulpDai(ethGulperAmount, levrBalance/3);
+        GulpDeth(ethGulperAmount, levrBalance/3);
         BurnFry(ethBalance*50/1000);
     }
 
@@ -97,10 +107,18 @@ contract Splitter
         daiSwapTool.convertExactEthToDai{ value:_ethBalance }();
     }
 
-    function GulpDeth(uint _levrBalance)
+    function GulpDeth(uint _ethBalance, uint _levrBalance)
         private
     {
+        SwapWethForDEth(_ethBalance);
+        dethErc20.transfer(dEthGulper, dethErc20.balanceOf(address(this)));
         levrErc20.transfer(dEthGulper, _levrBalance);
+    }
+
+    function SwapWethForDEth(uint _ethBalance)
+        private
+    {
+        dEthSwapTool.convertExactEthToDEth{ value:_ethBalance }();
     }
 
     function BurnFry(uint _ethBalance)
