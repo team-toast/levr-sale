@@ -186,7 +186,7 @@ contract DEthSwapTool
         uint24 fee = 10000;
         address recipient = msg.sender;
         uint256 amountIn = msg.value;
-        uint256 amountOutMinimum = 10**18; // won't work for less than 1 FRY
+        uint256 amountOutMinimum = 1; // won't work for less than 1 FRY
         uint160 sqrtPriceLimitX96 = 0;  
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams(

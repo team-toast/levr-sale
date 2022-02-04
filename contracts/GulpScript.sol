@@ -43,7 +43,7 @@ contract ArbitrumGulpScript is GulpScript
 {
     constructor()
     GulpScript (
-        ISplitter(0x2518a3f571b0a5F3bB390AeF10c876bEBb051293),  // splitter
+        ISplitter(0x158c793236636756e8B83B0112B2e33315d298c7),  // splitter
         IGulper(0xbe3a1490153Ae6f497852e75E8d022562CAb71C7),    // ethGulper
         IGulper(0xf339039197592067f6a5F69cBFF6d8235643942D),    // dEthGulper
         IGulper(0x78c33207e8E1ddd7634062C3b198266756b30Ba4))    // daiGulper
