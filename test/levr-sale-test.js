@@ -7,11 +7,14 @@ const { BigNumber } = require("ethers");
 const testLevrAddress = "0xce0F718BD518E38A479fcB0187B67c2Eb57c5e1D";
 const accountToImpersonate = "0x20BD917E2fc207AC80a15b034B4dBAa296065216";
 //let incline = "1212871000000000000000000000000000000000000000000"; // 1% Start
-let incline = "1224876200000000000000000000000000000000000000000"; // 1% Start (3.5M tokens)
+//let incline = "1224876200000000000000000000000000000000000000000"; // 1% Start (3.5M tokens)
+//let incline = "1599840000000000000000000000000000000000000000000"; // 1% Start (4M tokens)
+let incline = "1600000000000000000000000000000000000000000000000"; // 1% Start (4M tokens)
 //let incline = "149572000000000000000000000000000000000000000000";
 
 //let web3 = new Web3("ws://localhost:8545");
-let initialEthRaised = web3.utils.toWei("5.00050535719446");
+//let initialEthRaised = web3.utils.toWei("5.000653210325598781");
+let initialEthRaised = web3.utils.toWei("5.0");
 let zeroAddress = "0x0000000000000000000000000000000000000000";
 let LEVR;
 let levr;
@@ -141,79 +144,79 @@ describe("LevrSale Tests", function () {
     //     // );
     // });
 
-    it("LS_C: Constructor", async function () {
-        // Calculate initial tokens issued
-        let initialTokensIssued = calculateTokensReceived(
-            initialEthRaised,
-            "0"
-        );
+    // it("LS_C: Constructor", async function () {
+    //     // Calculate initial tokens issued
+    //     let initialTokensIssued = calculateTokensReceived(
+    //         initialEthRaised,
+    //         "0"
+    //     );
 
-        // console.log("Starting Levr: ", initialTokensIssued);
-        expect(await sale.inclineWAD()).to.equal(incline);
-        expect(await sale.tokenOnSale()).to.equal(levr.address);
-        expect(await sale.gulper()).to.equal(gulperAccount.address);
-        expect(await sale.treasury()).to.equal(treasuryAccount.address);
-        expect(await sale.foundryTreasury()).to.equal(foundryAccount.address);
-        expect(await sale.tokensSold()).to.equal(initialTokensIssued);
-    });
+    //     // console.log("Starting Levr: ", initialTokensIssued);
+    //     expect(await sale.inclineWAD()).to.equal(incline);
+    //     expect(await sale.tokenOnSale()).to.equal(levr.address);
+    //     expect(await sale.gulper()).to.equal(gulperAccount.address);
+    //     expect(await sale.treasury()).to.equal(treasuryAccount.address);
+    //     expect(await sale.foundryTreasury()).to.equal(foundryAccount.address);
+    //     expect(await sale.tokensSold()).to.equal(initialTokensIssued);
+    // });
 
-    it("LS_B: Buy zero Levr", async function () {
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [accountToImpersonate],
-        });
+    // it("LS_B: Buy zero Levr", async function () {
+    //     await hre.network.provider.request({
+    //         method: "hardhat_impersonateAccount",
+    //         params: [accountToImpersonate],
+    //     });
 
-        // admin has minting rights
-        const admin = await ethers.getSigner(accountToImpersonate);
+    //     // admin has minting rights
+    //     const admin = await ethers.getSigner(accountToImpersonate);
 
-        // send ether to admin account
-        await testAccount.sendTransaction({
-            to: accountToImpersonate,
-            value: ethers.utils.parseEther("1.0"),
-        });
+    //     // send ether to admin account
+    //     await testAccount.sendTransaction({
+    //         to: accountToImpersonate,
+    //         value: ethers.utils.parseEther("1.0"),
+    //     });
 
-        // Use admin address to make Sale a minter of Levr token
-        await levr.connect(admin).addMinter(sale.address);
+    //     // Use admin address to make Sale a minter of Levr token
+    //     await levr.connect(admin).addMinter(sale.address);
 
-        let gulperAccountBalanceBefore = await gulperAccount.getBalance();
-        let tokensIssuedBefore = await sale.tokensSold();
+    //     let gulperAccountBalanceBefore = await gulperAccount.getBalance();
+    //     let tokensIssuedBefore = await sale.tokensSold();
 
-        //console.log("Tokens Sold Initial: ", tokensIssuedBefore);
+    //     //console.log("Tokens Sold Initial: ", tokensIssuedBefore);
 
-        // Buy 0 Levr
+    //     // Buy 0 Levr
 
-        let buyTx = await sale.buy(gulperAccount.address, zeroAddress, {
-            value: web3.utils.toWei("0"),
-        });
+    //     let buyTx = await sale.buy(gulperAccount.address, zeroAddress, {
+    //         value: web3.utils.toWei("0"),
+    //     });
 
-        // STATE
-        let totalRaised = await sale.raised();
-        let tokensIssued = await sale.tokensSold();
-        //   console.log("Total Raised: ", totalRaised);
+    //     // STATE
+    //     let totalRaised = await sale.raised();
+    //     let tokensIssued = await sale.tokensSold();
+    //     //   console.log("Total Raised: ", totalRaised);
 
-        let testAccountBalance = await levr.balanceOf(testAccount.address);
-        let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
-        let foundryAccountBalance = await levr.balanceOf(
-            foundryAccount.address
-        );
-        let treasuryAccountBalance = await levr.balanceOf(
-            treasuryAccount.address
-        );
+    //     let testAccountBalance = await levr.balanceOf(testAccount.address);
+    //     let gulperAccountBalance = await gulperAccount.getBalance(); // eth balance of gulper
+    //     let foundryAccountBalance = await levr.balanceOf(
+    //         foundryAccount.address
+    //     );
+    //     let treasuryAccountBalance = await levr.balanceOf(
+    //         treasuryAccount.address
+    //     );
 
-        expect(testAccountBalance).to.equal("0");
-        expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
-            web3.utils.toWei("0")
-        );
-        expect(foundryAccountBalance).to.equal("0");
-        expect(treasuryAccountBalance).to.equal("0");
-        expect(tokensIssued).to.equal(tokensIssuedBefore);
-        expect(totalRaised).to.equal(initialEthRaised);
+    //     expect(testAccountBalance).to.equal("0");
+    //     expect(gulperAccountBalance.sub(gulperAccountBalanceBefore)).to.equal(
+    //         web3.utils.toWei("0")
+    //     );
+    //     expect(foundryAccountBalance).to.equal("0");
+    //     expect(treasuryAccountBalance).to.equal("0");
+    //     expect(tokensIssued).to.equal(tokensIssuedBefore);
+    //     expect(totalRaised).to.equal(initialEthRaised);
 
-        // EVENTS
-        expect(buyTx)
-            .to.emit(sale, "Bought")
-            .withArgs(gulperAccount.address, zeroAddress, "0");
-    });
+    //     // EVENTS
+    //     expect(buyTx)
+    //         .to.emit(sale, "Bought")
+    //         .withArgs(gulperAccount.address, zeroAddress, "0");
+    // });
 
     it("LS_B: Buy Levr", async function () {
         await hre.network.provider.request({
@@ -233,7 +236,7 @@ describe("LevrSale Tests", function () {
         // Use admin address to make Sale contract a minter of Levr token
         await levr.connect(admin).addMinter(sale.address);
 
-        let amountToBuy = "1.0";
+        let amountToBuy = "10.0";
         let raisedBefore = await sale.raised();
         let gulperAccountBalanceBefore = await gulperAccount.getBalance();
         let tokensIssuedBefore = await sale.tokensSold();
@@ -285,17 +288,17 @@ describe("LevrSale Tests", function () {
 
         // Gulper balance
         expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(25).toString()
+            calculatedTokenAmountWithJS.div(40).mul(25).toString()
         );
 
         // Foundry balance
         expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(5).toString()
+            calculatedTokenAmountWithJS.div(40).mul(5).toString()
         );
 
         // Treasury balance
         expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.toString()
+            calculatedTokenAmountWithJS.div(40).mul(30).toString()
         );
 
         // Tokens issued
@@ -385,22 +388,22 @@ describe("LevrSale Tests", function () {
 
         // Gulper balance
         expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(25).toString()
+            calculatedTokenAmountWithJS.div(40).mul(25).toString()
         );
 
         // Foundry balance
         expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(5).toString()
+            calculatedTokenAmountWithJS.div(40).mul(5).toString()
         );
 
         // Referrer balance
         expect(referrerBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(5).toString()
+            calculatedTokenAmountWithJS.div(40).mul(5).toString()
         );
 
         // Treasury balance
         expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.toString()
+            calculatedTokenAmountWithJS.div(40).mul(25).toString()
         );
 
         // Tokens issued
@@ -593,17 +596,17 @@ describe("LevrSale Tests", function () {
 
         // Gulper balance
         expect(gulperAccountLevrBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(25).toString()
+            calculatedTokenAmountWithJS.div(40).mul(25).toString()
         );
 
         // Foundry balance
         expect(foundryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.div(35).mul(5).toString()
+            calculatedTokenAmountWithJS.div(40).mul(5).toString()
         );
 
         // Treasury balance
         expect(treasuryAccountBalance).to.equal(
-            calculatedTokenAmountWithJS.toString()
+            calculatedTokenAmountWithJS.div(40).mul(30).toString()
         );
 
         // Tokens issued
@@ -701,7 +704,10 @@ describe("LevrSale Tests", function () {
             ).toString()
         );
 
-        // console.log("Token Price: ", web3.utils.fromWei(price.toString()));
+        // console.log(
+        //     "Average Token Price: ",
+        //     web3.utils.fromWei(price.toString())
+        // );
         // console.log("Calculated token Price: ", calculatedPrice);
 
         // RETURNS
@@ -759,7 +765,7 @@ describe("LevrSale Tests", function () {
         );
     });
 
-    //return; // Don't run graph data generation
+    // //return; // Don't run graph data generation
 
     it("Multiple buy Test", async function () {
         //let incline = "389564392300000000000000000000000000000000000000"; // 5% Start
@@ -768,7 +774,9 @@ describe("LevrSale Tests", function () {
 
         // Wolfram equation to get incline value
         // Divide[\(40)2 \(40)2*Power[10,21]\(41) Power[\(40)1*Power[10,26]\(41),2] + \(40)2*Power[10,22]\(41) Power[1*Power[10,26],2] + 2 sqrt\(40)Power[\(40)2*Power[10,21]\(41),2] Power[\(40)\(40)1*Power[10,26]\(41),4] + \(40)2*Power[10,21]\(41) \(40)2*Power[10,22]\(41) Power[1*Power[10,26],4]\(41)\(41),\(40)2 Power[\(40)2*Power[10,22]\(41),2]\(41)]
+        // Divide[\(40)2 \(40)6.531272303274404384 × Power[10,18]\(41) Power[\(40)4*Power[10,26]\(41),2] + \(40)2*Power[10,22]\(41) Power[4*Power[10,26],2] + 2 sqrt\(40)Power[\(40)6.531272303274404384 × Power[10,18]\(41),2] Power[\(40)4*Power[10,26]\(41),4] + \(40)6.531272303274404384 × Power[10,18]\(41) \(40)2*Power[10,22]\(41) Power[4*Power[10,26],4]\(41)\(41),\(40)2 Power[\(40)2*Power[10,22]\(41),2]\(41)]
 
+        console.log("Tokens sold in presale: ", await sale.tokensSold());
         await hre.network.provider.request({
             method: "hardhat_impersonateAccount",
             params: [accountToImpersonate],
@@ -824,7 +832,10 @@ describe("LevrSale Tests", function () {
         let issueRecords = [];
 
         let numberOfBuys = 100;
-        let etherToSpend = "500.0";
+        let etherToSpend = "499.95";
+
+        // let numberOfBuys = 2;
+        // let etherToSpend = "25000.0";
 
         // amountRaised = await sale.raised();
         // tokensIssued = await sale.tokensSold();
@@ -835,15 +846,12 @@ describe("LevrSale Tests", function () {
         // ]);
 
         console.log(
-            "Eth paid for 3.5M tokens: ",
-            calculateEthPaid(web3.utils.toWei("3500000").toString())
+            "Eth paid for 4M tokens: ",
+            calculateEthPaid(web3.utils.toWei("4000000").toString())
         );
         console.log(
             "Tokens for eth: ",
-            calculateTokensReceived(
-                web3.utils.toWei("5.0500011955104871").toString(),
-                "0"
-            )
+            calculateTokensReceived(web3.utils.toWei("5.0").toString(), "0")
         );
 
         //return;
@@ -887,10 +895,12 @@ describe("LevrSale Tests", function () {
                 testAccountCalculatedBalance.add(tmpCalculated);
             foundryAccountCalculatedBalance =
                 foundryAccountCalculatedBalance.add(
-                    tmpCalculated.div(35).mul(5)
+                    tmpCalculated.div(40).mul(5)
                 );
             treasuryAccountCalculatedBalance =
-                treasuryAccountCalculatedBalance.add(tmpCalculated);
+                treasuryAccountCalculatedBalance.add(
+                    tmpCalculated.div(40).mul(30)
+                );
 
             expect(testAccountBalance).to.equal(
                 testAccountCalculatedBalance.toString()
@@ -993,7 +1003,7 @@ describe("LevrSale Tests", function () {
         let foundryAccountBalance = 0;
         let treasuryAccountBalance = 0;
 
-        let numberOfBuys = 10;
+        let numberOfBuys = 9;
         let etherToSpend = "5000.0";
 
         for (let i = 0; i < numberOfBuys; i++) {
