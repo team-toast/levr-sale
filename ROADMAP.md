@@ -11,5 +11,8 @@
 
 # 2022 Q3
 * Launch v1 of LSP factory
-* Continue work on direction pools
+* Construct cross-chain custody system
+
+# 2022 Q4
+* Begin work on "direction pools"
 
