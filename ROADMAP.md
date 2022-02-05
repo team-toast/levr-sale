@@ -5,7 +5,7 @@
 ## 2022 Q1
 * ~Initiate LEVR token~
 * ~Initiate permafrost pools~
-* => Initiate liquidity swap sale
+* **==> Initiate liquidity swap sale <==**
 * Market sale extensively
 * Give governance once $200k has been reached and 1 week has passed OR 3 months after sale launch
 
