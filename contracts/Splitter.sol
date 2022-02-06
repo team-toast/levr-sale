@@ -77,7 +77,7 @@ contract Splitter
         dEthSwapTool = _dEthSwapTool;
     }
     
-    function Split() 
+    function Split()    
         public
     { 
         uint ethBalance = address(this).balance;
