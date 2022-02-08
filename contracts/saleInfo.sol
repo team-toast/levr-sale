@@ -88,6 +88,6 @@ contract SaleInfo
 
 contract ArbitrumSaleInfo is SaleInfo
 {
-    constructor() SaleInfo(ISale(0x272cC4925E544D2878D41bbDc5fF57F2120592b6))
+    constructor() SaleInfo(ISale(0x8e131BD8CD1D9E5bCE080bc54613d811E0425aF8))
     { }
 }

@@ -236,10 +236,10 @@ contract ArbitrumLevrSale is Sale, RenounceMinter
     constructor() 
     Sale(
         1600000000000000000000000000000000000000000000000,              // incline
-        IERC20Mintable(0x7A416Afc042537f290CB44A7c2C269Caf0Edc93C),     // LEVR erc20
-        0x91ABD747E28AD2D28bE910C8b8B965cfB1AD92eE,                     // splitter that feeds gulpers
+        IERC20Mintable(0x77De4df6F2d87Cc7708959bCEa45d58B0E8b8315),     // LEVR erc20
+        0x158c793236636756e8B83B0112B2e33315d298c7,                     // splitter that feeds gulpers
         0x2A0EdcD9C46fAf8689F5dd475c2e4Da4eeb51301,                     // levr.ly treasury
         0xC38f63Aba640F390F1108A81a441F27398867722)                     // Foundry treasury on Arbitrum
-    RenounceMinter(msg.sender)
+    RenounceMinter(0x7040E1373d281Ec5d6972B3546EAbf2E3Db81E56)          // Gnosis multisig
     { }
 }
