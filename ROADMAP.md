@@ -18,5 +18,4 @@
 * Construct cross-chain custody system
 
 ## 2022 Q4
-* Begin work on "direction pools"
-
+* Begin work on "directional pools"
