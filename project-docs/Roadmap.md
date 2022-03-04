@@ -5,9 +5,14 @@
 ## 2022 Q1
 * ~Initiate LEVR token~
 * ~Initiate permafrost pools~
-* **==> Initiate liquidity swap sale <==**
-* Market sale extensively
-* Give governance once $200k has been reached and 1 week has passed OR 3 months after sale launch
+* ~Initiate liquidity swap sale~
+* **==> Market sale extensively <==**
+* Payout existing liqudity provider airdrop when $250k of liquidity has been accumulated or 3 months have passed.
+    * 20% of the accumulated $LEVR in the treasury will be used for this
+* Give governance control of the treasury 
+    * Once $300k of liquidity has been accumulated and 1 week has passed 
+    * **OR** 3 months after sale launch
+    * (This is to ensure we have a diverse governance group)
 
 ## 2022 Q2
 * Continue work on generic LSPs for launch on Polygon and Avalanche
